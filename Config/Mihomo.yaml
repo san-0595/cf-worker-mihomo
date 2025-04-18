@@ -100,7 +100,7 @@ geo-auto-update: true # 开启自动更新 Geo 数据库
 geo-update-interval: 24 # Geo 数据库更新间隔 (单位: 小时)
 global-ua: clash.meta # 自定全局 UA
 etag-support: true # 外部资源下载的 ETag 支持
-log-level: info # 日志等级
+log-level: warning # 日志等级
 ipv6: true # 启用 IPv6
 #tls: # TLS 相关配置
 #  certificate: string # TLS 证书
@@ -689,7 +689,7 @@ rules:
   - RULE-SET,Geolocation-!cn,Proxy # 国际网络
   - RULE-SET,Proxy,Proxy # 代理
   - RULE-SET,Gfw,Proxy # Gfw 防火墙
-  - RULE-SET,STUN,Proxy # STUN 泄漏
+  - RULE-SET,STUN,Proxy # STUN 协议
   - RULE-SET,Leaseweb,Proxy # Leaseweb 服务商
 
   # CIDR
