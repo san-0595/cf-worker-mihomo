@@ -62,6 +62,7 @@ u: &u
   include-all-providers: true # 引入所有代理集合
   use:
     - provider # 使用第一个代理提供者
+    
 
 port: 7892 # HTTP 代理端口
 socks-port: 7891 # SOCKS5 代理端口
@@ -99,7 +100,7 @@ geo-auto-update: true # 开启自动更新 Geo 数据库
 geo-update-interval: 24 # Geo 数据库更新间隔 (单位: 小时)
 global-ua: clash.meta # 自定全局 UA
 etag-support: true # 外部资源下载的 ETag 支持
-log-level: warning # 日志等级
+log-level: info # 日志等级
 ipv6: true # 启用 IPv6
 #tls: # TLS 相关配置
 #  certificate: string # TLS 证书
@@ -587,16 +588,16 @@ proxy-groups:
   - { name: 🐟漏网之鱼, <<: *proxy }
 
 rules:
+  # 广告拦截
+  - RULE-SET,Advertising,🚫广告拦截
+  - RULE-SET,Reject,🚫广告拦截
+
   # 局域网
   - RULE-SET,Lan,🎯全球直连 # 私有网相关规则
   - RULE-SET,Lancidr,🎯全球直连,no-resolve # 私有网相关规则
   - RULE-SET,Private,🎯全球直连 # 局域网相关规则
   - RULE-SET,Privatecidr,🎯全球直连,no-resolve # 局域网相关规则
-
-  # 广告拦截
-  - RULE-SET,Advertising,🚫广告拦截
-  - RULE-SET,Reject,🚫广告拦截
-
+  
   # Apple 相关服务
   - RULE-SET,AppStore,Apple # App Store 应用商店
   - RULE-SET,iCloud,Apple # iCloud 云存储服务
@@ -683,12 +684,13 @@ rules:
   - RULE-SET,Gemini,OpenAI # Google Gemini AI
   - RULE-SET,Google,Google # Google 相关服务
   - RULE-SET,Cloudflare,Cloudflare # Cloudflare CDN 及安全服务
-  - RULE-SET,Category-anticensorship,Proxy # 反审查相关规则集，适用于翻墙和自由访问互联网
   - RULE-SET,Category-media,国际媒体 # 媒体相关规则集，适用于流媒体解锁
+  - RULE-SET,Category-anticensorship,Proxy # 反审查相关规则集，适用于翻墙和自由访问互联网
   - RULE-SET,Geolocation-!cn,Proxy # 国际网络
   - RULE-SET,Proxy,Proxy # 代理
   - RULE-SET,Gfw,Proxy # Gfw 防火墙
-  - DOMAIN-REGEX,^us\.[a-zA-Z0-9.-]+,Proxy # 匹配us开头的域名
+  - RULE-SET,STUN,Proxy # STUN 泄漏
+  - RULE-SET,Leaseweb,Proxy # Leaseweb 服务商
 
   # CIDR
 #  - RULE-SET,Cloudflarecidr,Cloudflare,no-resolve # Cloudflare
@@ -1366,11 +1368,6 @@ rule-providers:
     url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/mrs/private.mrs"
     path: ./ruleset/Privatecidr.mrs
 
-  Reject:
-    <<: *domain_yaml
-    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/clash-rules@release/reject.txt"
-    path: ./ruleset/Reject.yaml
-
 #  Cloudflarecidr:
 #    <<: *classical_yaml
 #    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/cloudflare.txt"
@@ -1413,12 +1410,27 @@ rule-providers:
     url: "https://jsd.onmicrosoft.cn/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash-classical.yaml"
     path: ./ruleset/Advertising.yaml
 
+  Reject:
+    <<: *domain_yaml
+    url: "https://jsd.onmicrosoft.cn/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.yaml"
+    path: ./ruleset/Reject.yaml
+
   4GTV:
     <<: *classical_text
     url: "https://jsd.onmicrosoft.cn/gh/antn0000/fenliu@main/4GTV.list"
     path: ./ruleset/4GTV.text
 
+  STUN:
+    <<: *classical_yaml
+    url: "https://jsd.onmicrosoft.cn/gh/HDTianRu/clashConfig@main/provide/rule/stun.yaml"
+    path: ./ruleset/STUN.yaml
+
   WeChat:
     <<: *domain_mrs
     url: "https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/rule/clash/WeChat.mrs"
-    path: ./ruleset/WeChattext
+    path: ./ruleset/WeChat.mrs
+
+  Leaseweb:
+    <<: *classical_yaml
+    url: "https://jsd.onmicrosoft.cn/gh/Kwisma/ASN-List@main/data/Leaseweb/ASN.Leaseweb.yaml"
+    path: ./ruleset/Leaseweb.yaml
