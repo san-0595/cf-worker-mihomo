@@ -694,7 +694,7 @@ rules:
   - RULE-SET,Geolocation-!cn,Proxy # 国际网络
   - RULE-SET,Proxy,Proxy # 代理
   - RULE-SET,Gfw,Proxy # Gfw 防火墙
-  - RULE-SET,STUN,Proxy # STUN 泄漏
+  - RULE-SET,STUN,Proxy # STUN 协议
   - RULE-SET,Leaseweb,Proxy # Leaseweb 服务商
 
   # CIDR
