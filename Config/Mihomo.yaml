@@ -356,7 +356,7 @@ dns:
     - "https://doh.dns.sb/dns-query" # SB DNS over H3
     - "https://public.dns.iij.jp/dns-query#🇯🇵日本" # IIJ DNS over H3
   proxy-server-nameserver: # 用于节点域名解析 DNS 服务器
-    - "https://dns.alidns.com/dns-query" # 阿里 DNS over H3
+    - "https://cloudflare-dns.com/dns-query" # Cloudflare DNS over H3
   direct-nameserver: #  用于直连出口域名解析的 DNS 服务器
     - "https://dns.alidns.com/dns-query" # 阿里 DNS over H3
 
