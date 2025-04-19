@@ -591,7 +591,6 @@ proxy-groups:
 rules:
   # 广告拦截
   - RULE-SET,Advertising,🚫广告拦截
-  - RULE-SET,Reject,🚫广告拦截
 
   # 局域网
   - RULE-SET,Lan,🎯全球直连 # 私有网相关规则
@@ -1410,11 +1409,6 @@ rule-providers:
     <<: *classical_yaml
     url: "https://jsd.onmicrosoft.cn/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash-classical.yaml"
     path: ./ruleset/Advertising.yaml
-
-  Reject:
-    <<: *domain_yaml
-    url: "https://jsd.onmicrosoft.cn/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.yaml"
-    path: ./ruleset/Reject.yaml
 
   4GTV:
     <<: *classical_text
