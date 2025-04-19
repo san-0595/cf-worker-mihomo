@@ -402,8 +402,8 @@ proxy-groups:
   - { name: 百度贴吧, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/BaiDuTieBa.webp }
   - { name: 百度, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Baidu.webp }
   - { name: 哔哩哔哩, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/BiliBili.webp }
-  - { name: 哔哩哔哩游戏, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Biligame.webp }
-  - { name: 哔哩哔哩东南亚, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Biliintl.webp }
+  - { name: 哔哩游戏, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Biligame.webp }
+  - { name: 哔哩东南亚, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Biliintl.webp }
   - { name: BT追踪器, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/BitTorrent.webp }
   - { name: 暴雪, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Blizzard.webp }
   - { name: 字节跳动, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/ByteDance.webp }
@@ -678,7 +678,7 @@ rules:
   - RULE-SET,EA,EA # EA 游戏 (如 FIFA)
   - RULE-SET,Sony,索尼 # Sony 相关服务
   - RULE-SET,HoYoverse,HoYoverse # 米哈游 (如原神)
-  - RULE-SET,Biliintl,哔哩哔哩东南亚 # 哔哩哔哩国际版
+  - RULE-SET,Biliintl,哔哩东南亚 # 哔哩哔哩国际版
   - RULE-SET,18comic,禁漫天堂 # 禁漫天堂动漫网站
   - RULE-SET,GoogleDrive,Google云盘 # Google Drive 云存储
   - RULE-SET,GoogleEarth,Google地图 # Google Earth 地图服务
@@ -727,7 +727,7 @@ rules:
   - RULE-SET,iQIYI,爱奇艺 # 爱奇艺，在线视频平台
   - RULE-SET,SteamCN,Steam中国 # Steam 中国版，游戏社区和商店
   - RULE-SET,BiliBili,哔哩哔哩 # 哔哩哔哩，二次元弹幕视频网站
-  - RULE-SET,Bilibili-game,哔哩哔哩游戏 # bilibili 游戏规则
+  - RULE-SET,Bilibili-game,哔哩游戏 # bilibili 游戏规则
   - RULE-SET,NetEase,网易 # 网易，涵盖邮箱、游戏等服务
   - RULE-SET,JingDong,京东 # 京东，电商平台
   - RULE-SET,58TongCheng,58同城 # 58同城，分类信息平台
