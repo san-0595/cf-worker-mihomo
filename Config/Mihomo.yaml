@@ -367,11 +367,11 @@ proxy-groups:
 
   - { name: ☑️ 手动切换, <<: *u, type: select }
 
-  - { name: 🚫广告拦截, type: select, proxies: [🚫拒绝, 🚀节点选择] }
+  - { name: 🚫广告拦截, type: select, include-all-providers: true, proxies: [🚫拒绝, 🚀节点选择] }
 
-  - { name: 🚫泄漏拦截, type: select, proxies: [🚫拒绝, 🚀节点选择] }
+  - { name: 🚫泄漏拦截, type: select, include-all-providers: true, proxies: [🚫拒绝, 🚀节点选择] }
 
-  - { name: 🎯全球直连, type: select, proxies: [🎯直连, 🚀节点选择] }
+  - { name: 🎯全球直连, type: select, include-all-providers: true, proxies: [🎯直连, 🚀节点选择] }
 
   - { name: ♻️自动选择, <<: *u, tolerance: 1, type: url-test }
 
