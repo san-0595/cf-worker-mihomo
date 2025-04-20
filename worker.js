@@ -2772,6 +2772,7 @@ async function initconfig(urls, config) {
       <<: *override
       additional-suffix: ' ${index + 1}'
 `);
+    index++;
   }
   const ProxyProviders = `
 proxy-providers:
