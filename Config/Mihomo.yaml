@@ -594,8 +594,9 @@ rules:
   - OR,((RULE-SET,Lan),(RULE-SET,Lancidr,no-resolve),(RULE-SET,Private),(RULE-SET,Privatecidr,no-resolve)),🎯全球直连
 
   # 广告拦截
-  - OR,((RULE-SET,Advertising),(RULE-SET,BlockHttpDNS)(RULE-SET,Category-ads-all),(RULE-SET,Category-httpdns-cn)),🚫广告拦截
-  
+  - OR,((RULE-SET,Advertising),(RULE-SET,Category-ads-all)),🚫广告拦截
+  - OR,((RULE-SET,BlockHttpDNS),(RULE-SET,Category-httpdns-cn)),🚫泄漏拦截
+
   # Apple 相关服务
   - RULE-SET,AppStore,Apple # App Store 应用商店
   - RULE-SET,iCloud,Apple # iCloud 云存储服务
