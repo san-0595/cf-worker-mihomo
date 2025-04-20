@@ -1363,7 +1363,7 @@ rule-providers:
     url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/fastly.mrs"
     path: ./ruleset/Fastly.mrs
 
-  Fastly:
+  Fastlycidr:
     <<: *ipcidr_mrs
     url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/fastly.mrs"
     path: ./ruleset/Fastlycidr.mrs
