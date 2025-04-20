@@ -152,32 +152,24 @@ function isValidURL(url) {
 
 // 初始化配置
 async function initconfig(urls, config) {
-	let index = 0, proxy = [], u = [];
+	let index = 0, proxy = [];
 	for (const url of urls) {
 		proxy.push(`
   provider${index + 1}:
-    <<: *p # 继承通用配置
+    <<: *p
     url: "${url}"
     path: ./proxies/provider${index + 1}.yaml
+    override:
+      additional-suffix: ' ${index + 1}'
 `)
-		u.push(`
-    - provider${index + 1}
-`)
-		index++;
-	}
 	const ProxyProviders = `
 proxy-providers:
 ${proxy.join('')}
-`
-	const use = `
-use:
-${u.join('')}
 `
 
 	const response = await fetch(config);
 	let mihomodata = await response.text()
 	// 使用正则表达式替换 proxy-providers 和 u 锚点
 	mihomodata = mihomodata.replace(/proxy-providers:([\s\S]*?)(?=\n\S|$)/, ProxyProviders.trim());
-	mihomodata = mihomodata.replace(/use:\n([\s\S]*?)(?=\n\S|$)/, use.trim());
 	return yaml.dump(yaml.load(mihomodata), { noRefs: true, lineWidth: -1 });
 }

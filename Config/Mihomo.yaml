@@ -11,8 +11,8 @@
 
 # ------------------------------------------------------------
 # 锚点区
-proxy: &proxy { type: select, proxies: [🚀节点选择, 🎯全球直连, ☑️ 手动切换, ♻️自动选择, ⚡️均衡负载, 🔯故障转移, 🇭🇰香港, 🇹🇼台湾, 🇯🇵日本, 🇺🇸美国, 🇸🇬新加坡, 🇬🇧英国, 🇩🇪德国, 🇫🇷法国, 🇨🇦加拿大, 🇦🇺澳大利亚, 🇰🇷韩国, 🇷🇺俄罗斯, 🇳🇱荷兰, 🇮🇳印度, 🇲🇾马来西亚, 🇵🇱波兰, 🇪🇪爱沙尼亚, 🇦🇪阿联酋, 🇳🇬尼日利亚, 🇧🇬保加利亚, 🇸🇨塞舌尔, 🇪🇸西班牙, 🇻🇳越南, 🇸🇽荷属圣马丁, 🇲🇴澳门, 🇵🇭菲律宾, 🇹🇭泰国, 🇲🇳蒙古, 🇫🇮芬兰, 🇸🇪瑞典, 🇦🇹奥地利, 🇧🇷巴西, 🇰🇿哈萨克斯坦, 🇮🇱以色列, 🇦🇪阿拉伯联合酋长国,  🇨🇭瑞士, 🌐其它地区] }
-direct: &direct { type: select, proxies: [🎯全球直连, 🚀节点选择, ☑️ 手动切换, ♻️自动选择, ⚡️均衡负载, 🔯故障转移, 🇭🇰香港, 🇹🇼台湾, 🇯🇵日本, 🇺🇸美国, 🇸🇬新加坡, 🇬🇧英国, 🇩🇪德国, 🇫🇷法国, 🇨🇦加拿大, 🇦🇺澳大利亚, 🇰🇷韩国, 🇷🇺俄罗斯, 🇳🇱荷兰, 🇮🇳印度, 🇲🇾马来西亚, 🇵🇱波兰, 🇪🇪爱沙尼亚, 🇦🇪阿联酋, 🇳🇬尼日利亚, 🇧🇬保加利亚, 🇸🇨塞舌尔, 🇪🇸西班牙, 🇻🇳越南, 🇸🇽荷属圣马丁, 🇲🇴澳门, 🇵🇭菲律宾, 🇹🇭泰国, 🇲🇳蒙古, 🇫🇮芬兰, 🇸🇪瑞典, 🇦🇹奥地利, 🇧🇷巴西, 🇰🇿哈萨克斯坦, 🇮🇱以色列, 🇦🇪阿拉伯联合酋长国,  🇨🇭瑞士, 🌐其它地区] }
+proxy: &proxy { type: select, include-all-providers: true, proxies: [🚀节点选择, 🎯全球直连, ☑️ 手动切换, ♻️自动选择, ⚡️均衡负载, 🔯故障转移, 🇭🇰香港, 🇹🇼台湾, 🇯🇵日本, 🇺🇸美国, 🇸🇬新加坡, 🇬🇧英国, 🇩🇪德国, 🇫🇷法国, 🇨🇦加拿大, 🇦🇺澳大利亚, 🇰🇷韩国, 🇷🇺俄罗斯, 🇳🇱荷兰, 🇮🇳印度, 🇲🇾马来西亚, 🇵🇱波兰, 🇪🇪爱沙尼亚, 🇦🇪阿联酋, 🇳🇬尼日利亚, 🇧🇬保加利亚, 🇸🇨塞舌尔, 🇪🇸西班牙, 🇻🇳越南, 🇸🇽荷属圣马丁, 🇲🇴澳门, 🇵🇭菲律宾, 🇹🇭泰国, 🇲🇳蒙古, 🇫🇮芬兰, 🇸🇪瑞典, 🇦🇹奥地利, 🇧🇷巴西, 🇰🇿哈萨克斯坦, 🇮🇱以色列, 🇦🇪阿拉伯联合酋长国,  🇨🇭瑞士, 🌐其它地区] }
+direct: &direct { type: select, include-all-providers: true, proxies: [🎯全球直连, 🚀节点选择, ☑️ 手动切换, ♻️自动选择, ⚡️均衡负载, 🔯故障转移, 🇭🇰香港, 🇹🇼台湾, 🇯🇵日本, 🇺🇸美国, 🇸🇬新加坡, 🇬🇧英国, 🇩🇪德国, 🇫🇷法国, 🇨🇦加拿大, 🇦🇺澳大利亚, 🇰🇷韩国, 🇷🇺俄罗斯, 🇳🇱荷兰, 🇮🇳印度, 🇲🇾马来西亚, 🇵🇱波兰, 🇪🇪爱沙尼亚, 🇦🇪阿联酋, 🇳🇬尼日利亚, 🇧🇬保加利亚, 🇸🇨塞舌尔, 🇪🇸西班牙, 🇻🇳越南, 🇸🇽荷属圣马丁, 🇲🇴澳门, 🇵🇭菲律宾, 🇹🇭泰国, 🇲🇳蒙古, 🇫🇮芬兰, 🇸🇪瑞典, 🇦🇹奥地利, 🇧🇷巴西, 🇰🇿哈萨克斯坦, 🇮🇱以色列, 🇦🇪阿拉伯联合酋长国,  🇨🇭瑞士, 🌐其它地区] }
 ipcidr_yaml: &ipcidr_yaml { type: http, interval: 86400, behavior: ipcidr, format: yaml, proxy: DIRECT }
 domain_yaml: &domain_yaml { type: http, interval: 86400, behavior: domain, format: yaml, proxy: DIRECT }
 classical_yaml: &classical_yaml { type: http, interval: 86400, behavior: classical, format: yaml, proxy: DIRECT }
@@ -45,14 +45,6 @@ p: &p
       skip-cert-verify: true # 跳过证书验证，仅适用于使用 tls 的协议
       ip-version: ipv4-prefer # 可选：dual/ipv4/ipv6/ipv4-prefer/ipv6-prefer ,默认使用 dual, ipv4: 仅使用 IPv4, ipv6: 仅使用 IPv6, ipv4-prefer: 优先使用 IPv4，对于 TCP 会进行双栈解析，并发链接但是优先使用 IPv4 链接，UDP 则为双栈解析，获取结果中的第一个 IPv4, ipv6-prefer:优先使用 IPv6，对于 TCP 会进行双栈解析，并发链接但是优先使用 IPv6 链接，UDP 则为双栈解析，获取结果中的第一个 IPv6
 
-# 配置代理提供者
-proxy-providers:
-  # 第一个代理提供者
-  provider:
-    <<: *p # 继承通用配置
-    url: [订阅链接]
-    path: ./proxies/provider.yaml
-
 # URL 测试配置
 u: &u
   type: url-test # 测试类型
@@ -60,8 +52,16 @@ u: &u
   strategy: consistent-hashing # 负载均衡策略
   lazy: true # 懒惰状态
   include-all-providers: true # 引入所有代理集合
-  use:
-    - provider # 使用第一个代理提供者
+
+# 配置代理提供者
+proxy-providers:
+  # 第一个代理提供者
+  provider:
+    <<: *p # 继承通用配置
+    url: [订阅链接]
+    path: ./proxies/provider.yaml
+    override:
+      additional-suffix: 'provider'
 
 port: 7892 # HTTP 代理端口
 socks-port: 7891 # SOCKS5 代理端口
