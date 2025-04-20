@@ -590,15 +590,11 @@ proxy-groups:
   - { name: 🐟漏网之鱼, <<: *proxy }
 
 rules:
-  # 广告拦截
-  - RULE-SET,Advertising,🚫广告拦截
-  - RULE-SET,Category-ads-all,🚫广告拦截
-
   # 局域网
-  - RULE-SET,Lan,🎯全球直连 # 私有网相关规则
-  - RULE-SET,Lancidr,🎯全球直连,no-resolve # 私有网相关规则
-  - RULE-SET,Private,🎯全球直连 # 局域网相关规则
-  - RULE-SET,Privatecidr,🎯全球直连,no-resolve # 局域网相关规则
+  - OR,((RULE-SET,Lan),(RULE-SET,Lancidr,no-resolve),(RULE-SET,Private),(RULE-SET,Privatecidr,no-resolve)),🎯全球直连
+
+  # 广告拦截
+  - OR,((RULE-SET,Advertising),(RULE-SET,Category-ads-all)),🚫广告拦截
   
   # Apple 相关服务
   - RULE-SET,AppStore,Apple # App Store 应用商店
@@ -733,8 +729,7 @@ rules:
   - RULE-SET,ByteDance,字节跳动 # 字节跳动，包含抖音、今日头条等
   - RULE-SET,Tencent,腾讯 # 腾讯相关服务，包括 QQ、腾讯云等
   - RULE-SET,Alibaba,阿里巴巴 # 阿里巴巴，涵盖云计算、电商等
-  - RULE-SET,CN,🎯全球直连 # 中国域名
-  - RULE-SET,CNcidr,🎯全球直连,no-resolve # 中国网络
+  - OR,((RULE-SET,CN),(RULE-SET,CNcidr,no-resolve)),🎯全球直连 # 中国域名
 
   # 节点代理
   - MATCH,🐟漏网之鱼
