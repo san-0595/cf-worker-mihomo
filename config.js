@@ -160,6 +160,7 @@ async function initconfig(urls, config) {
     url: "${url}"
     path: ./proxies/provider${index + 1}.yaml
     override:
+      <<: *override
       additional-suffix: ' ${index + 1}'
 `)}
 	const ProxyProviders = `
