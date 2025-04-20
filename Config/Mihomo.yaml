@@ -63,6 +63,14 @@ u: &u
   use:
     - provider # 使用第一个代理提供者
 
+# URL 测试配置
+u: &u
+  type: url-test # 测试类型
+  tolerance: 1 # 自动选择切换容差
+  strategy: consistent-hashing # 负载均衡策略
+  lazy: true # 懒惰状态
+  include-all-providers: true # 引入所有代理集合
+
 port: 7892 # HTTP 代理端口
 socks-port: 7891 # SOCKS5 代理端口
 mixed-port: 7890 # HTTP/SOCKS 混合代理端口
@@ -420,6 +428,7 @@ proxy-groups:
   - { name: Epic, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Epic.webp }
   - { name: FCM, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/FCM.webp }
   - { name: Facebook, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Facebook.webp }
+  - { name: Fastly, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Fastly.webp }
   - { name: 高德, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/GaoDe.webp }
   - { name: GitHub, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/GitHub.webp }
   - { name: Google, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Google.webp }
@@ -472,12 +481,11 @@ proxy-groups:
   - { name: TikTok, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/TikTok.webp }
   - { name: Twitch, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Twitch.webp }
   - { name: Twitter, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Twitter.webp }
+  - { name: Tor, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Tor.webp }
   - { name: 微信, <<: *direct, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/WeChat.webp }
   - { name: 维基百科, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/Wikipedia.webp }
   - { name: YouTube, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/YouTube.webp }
   - { name: YouTubeMusic, <<: *proxy, icon: https://jsd.onmicrosoft.cn/gh/Kwisma/cf-worker-mihomo@main/icon/webp/YouTubeMusic.webp }
-#  - { name: Fastly, <<: *proxy, icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACRElEQVR4Ad1XA4weQRTe2owanDH/dme2thEUYW0HddiwihrU0YW1jaC2bdu22+m3yfn2vduZu3KT7+d733vzmHFMHx3zJ+uY0gRGOL/60a4/EIYehRi/rV3V2fkdDwwtD3FgBqnwXziglaqhhRyaafxNiAPvUB8b8f8o7Xk1i80wyGoFpyOMEoCsUNOK7AiI+gKvAG2Jxzomu9rmeQIIfgC6iPgOjDYzLuRYmtAKP9C+46OevDN/cnsnMtPBVzoE70YjU0eBNVqotXg/HtHpe2xhQmBKIQRfgLkgiS+YNj8J/2UAX1kOoaZS7VYZAs8Z5WdIT+sIKewIIy8ZnhdaiCpUy9EnT6/T0qCDOkLnG83n9wlzYBGp4MpZFjMkg3ZAzg9TuEEqpMoUi60pmYheDXPgIyF82XqSCnWH4HyfVzA1tSpTtdvsR7m/j+LNU4g6MbE8E66d9g6og+Qc8byy+YVfEBV7y8q445SA/iOqpcO8PUdGId2rY1GETZmong7L12xGYaVF+DcxfDMKKtT2O7CzX/jdDbZpf343yLYFlRo0KEO1TSY+4v9+EYwPhewnZgre0m3blqbCNhjQLITajPc2KLKSOQXXoxQi1B6/by1cX/ZnKhdEKJBo+10+xfupTPln0XTU8UzHueKpm5hJrosX4HTdhIgVLLvS28wK34xvTeiKVvQgMcLDgMv2TpAKggP2xrEL0lUyQW8wUoXsiRBeM8j3lWBuBLo0s91sb5B5Pd8eGMnsd0Beyfxtknb9+iaGfwLLMLV73V9OOAAAAABJRU5ErkJggg==" }
-#  - { name: Tor, <<: *proxy, icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAzFBMVEUAAABosERosERosERosERosERosERosERosERosERosERosERosERosERosEQBAQEBAQFosEQBAQEBAQEcMBNIeS9osERNTka4uqcvLyoBAQEBAQH1+N57fXAgEycBAQEBAQFsbWIoFzABAQFdXlTX2cJHKFYBAQE+Pzjm6dCam4tXMWkJBQoBAQEQEA+KjH2pq5l2Q48vKTB+R5hPLV9nOnwBAQHHyrUBAQEgIB0nJCZAJE1uPoVfNnIBAQEBAQEBAQEwGzoYDh0RChQGpkL6AAAAQXRSTlMAIECfYM8QgO9w3zCv/1BQII+A/+//v////98w////QBD//6/////v//////+P///////////P/2D//////7+fcJgRKyAAAAFmSURBVHgBfE+1AQAhEMM9r8D+ozLASdq4YWGtUeG8zoeYgk8inUOpLcp8HyVC4Y0vUPkEoGgfLgBdpu/nBari//659umTrBIcBGIwfIO1PCCboDNlBqdGpy73v9MG1qCWx/xfPM828GbZjvv5jAAkz3+iB4Bh9PFEj4V0JvAwxWuidJp6WV4E98PLCmVdU9ZEyeut/uk6ElFo0tPZjJPcDJgIjdpKMbXT+Wy2uCGWArFWLcpW6WjWEeNWVwaRmMHKTtP1jG3jjhNwbmK9tkMUastAk482ClpbXXzKKYTYdSlGC/MNC6hVy5CoVA9s4iGgkBNYrNcppWrTA/vhkIaBukKUIdnCfAOHYQ+JpJZ0t6hQK+hLeMchcKA2JImyQmqhB7bwNgT8UlpVhbaNRAANA6f9eJOF0zpG2ylSBWfW58koAdvBCY2FApUFE9bh9p4fJRgrTA1cmp139zHfDgl05l2Wq3/vF3/mN1vANq4vAAAAAElFTkSuQmCC" }
 
   # 地区分组
   - { name: 🇭🇰香港, <<: *u, hidden: true, filter: '(?i)🇭🇰|\bHK\b|香港|Hong Kong' }
@@ -595,6 +603,7 @@ proxy-groups:
 rules:
   # 广告拦截
   - RULE-SET,Advertising,🚫广告拦截
+  - RULE-SET,Category-ads-all,🚫广告拦截
 
   # 局域网
   - RULE-SET,Lan,🎯全球直连 # 私有网相关规则
@@ -680,6 +689,9 @@ rules:
   - RULE-SET,HoYoverse,HoYoverse # 米哈游 (如原神)
   - RULE-SET,Biliintl,哔哩东南亚 # 哔哩哔哩国际版
   - RULE-SET,18comic,禁漫天堂 # 禁漫天堂动漫网站
+  - RULE-SET,Fastly,Fastly # Fastly 服务商
+  - RULE-SET,Tor,Tor # 洋葱浏览器
+  - RULE-SET,Torcidr,Tor,no-resolve # 洋葱浏览器 CIDR 
   - RULE-SET,GoogleDrive,Google云盘 # Google Drive 云存储
   - RULE-SET,GoogleEarth,Google地图 # Google Earth 地图服务
   - RULE-SET,GoogleFCM,FCM # Google Firebase Cloud Messaging (推送)
@@ -688,6 +700,7 @@ rules:
   - RULE-SET,Scholar,Google学术 # Google Scholar 学术搜索
   - RULE-SET,Gemini,OpenAI # Google Gemini AI
   - RULE-SET,Google,Google # Google 相关服务
+  - RULE-SET,Fastlycidr,Fastly,no-resolve # Fastly 服务商
   - RULE-SET,Cloudflare,Cloudflare # Cloudflare CDN 及安全服务
   - RULE-SET,Category-media,国际媒体 # 媒体相关规则集，适用于流媒体解锁
   - RULE-SET,Category-anticensorship,Proxy # 反审查相关规则集，适用于翻墙和自由访问互联网
@@ -696,15 +709,6 @@ rules:
   - RULE-SET,Gfw,Proxy # Gfw 防火墙
   - RULE-SET,STUN,Proxy # STUN 协议
   - RULE-SET,Leaseweb,Proxy # Leaseweb 服务商
-
-  # CIDR
-#  - RULE-SET,Cloudflarecidr,Cloudflare,no-resolve # Cloudflare
-#  - RULE-SET,Facebookcidr,Facebook,no-resolve # Facebook
-#  - RULE-SET,Googlecidr,Google,no-resolve # Google
-#  - RULE-SET,Fastlycidr,Fastly,no-resolve # Fastly
-#  - RULE-SET,Netflixcidr,Netflix,no-resolve # Netflix
-#  - RULE-SET,Twittercidr,Twitter,no-resolve # Twitter
-#  - RULE-SET,Torcidr,Tor,no-resolve # Tor
 
   # 国内分流
   - RULE-SET,NGA,NGA # NGA 论坛 (游戏社区)
@@ -726,8 +730,8 @@ rules:
   - RULE-SET,DingTalk,钉钉 # 钉钉，阿里巴巴企业通讯工具
   - RULE-SET,iQIYI,爱奇艺 # 爱奇艺，在线视频平台
   - RULE-SET,SteamCN,Steam中国 # Steam 中国版，游戏社区和商店
-  - RULE-SET,BiliBili,哔哩哔哩 # 哔哩哔哩，二次元弹幕视频网站
   - RULE-SET,Bilibili-game,哔哩游戏 # bilibili 游戏规则
+  - RULE-SET,BiliBili,哔哩哔哩 # 哔哩哔哩，二次元弹幕视频网站
   - RULE-SET,NetEase,网易 # 网易，涵盖邮箱、游戏等服务
   - RULE-SET,JingDong,京东 # 京东，电商平台
   - RULE-SET,58TongCheng,58同城 # 58同城，分类信息平台
@@ -1351,6 +1355,26 @@ rule-providers:
     <<: *domain_mrs
     url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/18comic.mrs"
     path: ./ruleset/18comic.mrs
+
+  Tor:
+    <<: *domain_mrs
+    url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tor.mrs"
+    path: ./ruleset/Tor.mrs
+
+  Torcidr:
+    <<: *ipcidr_mrs
+    url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/tor.mrs"
+    path: ./ruleset/Torcidr.mrs
+
+  Fastly:
+    <<: *domain_mrs
+    url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/fastly.mrs"
+    path: ./ruleset/Fastly.mrs
+
+  Fastly:
+    <<: *ipcidr_mrs
+    url: "https://jsd.onmicrosoft.cn/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/fastly.mrs"
+    path: ./ruleset/Fastlycidr.mrs
 
   # ------------------------------------------------------------
   # Loyalsoldier 规则
