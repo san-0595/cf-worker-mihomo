@@ -162,7 +162,9 @@ async function initconfig(urls, config) {
     override:
       <<: *override
       additional-suffix: ' ${index + 1}'
-`)}
+`)
+    index++;
+    }
 	const ProxyProviders = `
 proxy-providers:
 ${proxy.join('')}
