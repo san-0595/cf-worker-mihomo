@@ -2761,31 +2761,24 @@ function isValidURL(url) {
   }
 }
 async function initconfig(urls, config) {
-  let index = 0, proxy = [], u = [];
+  let index = 0, proxy = [];
   for (const url of urls) {
     proxy.push(`
   provider${index + 1}:
-    <<: *p # \u7EE7\u627F\u901A\u7528\u914D\u7F6E
+    <<: *p
     url: "${url}"
     path: ./proxies/provider${index + 1}.yaml
+    override:
+      additional-suffix: ' ${index + 1}'
 `);
-    u.push(`
-    - provider${index + 1}
-`);
-    index++;
   }
   const ProxyProviders = `
 proxy-providers:
 ${proxy.join("")}
 `;
-  const use = `
-use:
-${u.join("")}
-`;
   const response = await fetch(config);
   let mihomodata = await response.text();
   mihomodata = mihomodata.replace(/proxy-providers:([\s\S]*?)(?=\n\S|$)/, ProxyProviders.trim());
-  mihomodata = mihomodata.replace(/use:\n([\s\S]*?)(?=\n\S|$)/, use.trim());
   return js_yaml_default.dump(js_yaml_default.load(mihomodata), { noRefs: true, lineWidth: -1 });
 }
 export {
