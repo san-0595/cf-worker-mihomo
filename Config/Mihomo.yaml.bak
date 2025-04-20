@@ -1405,6 +1405,41 @@ rule-providers:
     url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/mrs/private.mrs"
     path: ./ruleset/Privatecidr.mrs
 
+#  Cloudflarecidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/cloudflare.txt"
+#    path: ./ruleset/Cloudflarecidr.yaml
+
+#  Facebookcidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/facebook.txt"
+#    path: ./ruleset/Facebookcidr.yaml
+
+#  Fastlycidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/fastly.txt"
+#    path: ./ruleset/Fastlycidr.yaml
+
+#  Googlecidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/google.txt"
+#    path: ./ruleset/Googlecidr.yaml
+
+#  Netflixcidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/netflix.txt"
+#    path: ./ruleset/Netflixcidr.yaml
+
+#  Torcidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/tor.txt"
+#    path: ./ruleset/Torcidr.yaml
+
+#  Twittercidr:
+#    <<: *classical_yaml
+#    url: "https://jsd.onmicrosoft.cn/gh/Loyalsoldier/geoip@release/clash/classical/twitter.txt"
+#    path: ./ruleset/Twittercidr.yaml
+
   # ------------------------------------------------------------
   # 自定义 规则
   Advertising:
