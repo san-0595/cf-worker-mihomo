@@ -1032,7 +1032,7 @@ async function singboxconfig(urls, templateUrl) {
         ApiUrlname.push(res.tag)
     })
     // 策略组处理
-    loadAndSetOutbounds(templatejson.outbounds, ApiUrlname)
+    templatejson.outbounds = loadAndSetOutbounds(templatejson.outbounds, ApiUrlname)
     // 节点合并
     templatejson.outbounds.push(...outboundsjson)
     return {
@@ -1096,8 +1096,8 @@ export async function loadAndMergeOutbounds(urls) {
     };
 }
 
-export function loadAndSetOutbounds(Array, ApiUrlname) {
-    Array.forEach(res => {
+export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
+    Outbounds.forEach(res => {
         // 从完整 outbound 名称开始匹配
         let matchedOutbounds = [...ApiUrlname];
         let hasValidAction = false;
@@ -1130,12 +1130,13 @@ export function loadAndSetOutbounds(Array, ApiUrlname) {
         }
         // 删除 filter 字段
         delete res.filter;
-        if (!res.outbounds || res.outbounds === '') {
-            return null; // 标记为要剔除
-        }
-
         return res;
-    }).filter(Boolean); // 剔除 null
+    });
+    // 删除空策略组
+    const filteredOutbounds = Outbounds.filter(item => {
+        return !(Array.isArray(item.outbounds) && item.outbounds.length === 0);
+    });
+    return filteredOutbounds
 }
 
 // 处理请求
