@@ -1,58 +1,54 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { parse,stringify } from 'yaml';
+import fs from 'fs/promises';
+import * as YAML from 'yaml';
+// YAML 流式具象化
+async function formatWholeYamlFile(inputFile, outputFile) {
+  // 读取文件
+  const text = await fs.readFile(inputFile, 'utf8');
 
-// 1. 读取并解析 YAML
-const yamlContent = readFileSync('Mihomo.yaml', 'utf8');
-const parsedData = parse(yamlContent, { maxAliasCount: -1, merge: true });
+  // 解析成 Document
+  const doc = YAML.parseDocument(text, { merge: true, maxAliasCount: -1 });
 
-// 2. 通用格式化函数
-const formatEntry = (obj) => {
-  let str = JSON.stringify(obj, null, 2)
-    .replace(/"((?:\\"|[^"]|\\')*)"/g, '$1')  // 移除所有值的引号
-    .replace(/: "?(true|false|\d+\.?\d*)"?/g, ': $1')  // 处理布尔值和数字
-    .replace(/\n\s*/g, ' ')  // 压缩为单行
-    .replace(/{ /g, '{').replace(/ }/g, '}'); // 优化对象格式
+  // 递归处理节点，找到所有数组，对其元素做流式对象格式化
+  function processNode(node) {
+    if (YAML.isSeq(node)) {
+      // 数组保持块格式，默认不设置 flow=true
+      // 把数组中是映射的元素转成 flow map
+      node.items = node.items.map(item => {
+        if (YAML.isMap(item)) {
+          const flowMap = new YAML.YAMLMap();
+          flowMap.flow = true;
+          for (const pair of item.items) {
+            flowMap.items.push(pair);
+          }
+          return flowMap;
+        } else if (YAML.isSeq(item)) {
+          // 如果数组里还有数组，递归处理
+          processNode(item);
+          return item;
+        } else {
+          return item;
+        }
+      });
 
-  return str;
-};
-let proxiesContent = 'proxies:\n';
-parsedData.proxies.forEach(item => {
-  proxiesContent += `  - ${formatEntry(item)}\n`;
-});
+      // 递归处理数组里的元素（已处理映射对象）
+      node.items.forEach(processNode);
 
-// 3. 处理 proxy-groups
-let proxyGroupsContent = 'proxy-groups:\n';
-parsedData['proxy-groups']?.forEach(item => {
-  proxyGroupsContent += `  - ${formatEntry(item)}\n`;
-});
+    } else if (YAML.isMap(node)) {
+      // 处理映射的每个值
+      node.items.forEach(pair => {
+        processNode(pair.value);
+      });
+    }
+  }
 
-// 4. 处理 rule-providers
-let ruleProvidersContent = 'rule-providers:\n'; 
-Object.entries(parsedData['rule-providers'] || {}).forEach(([key, value]) => {
-  ruleProvidersContent += `  ${key}: ${formatEntry(value)}\n`;
-});
+  processNode(doc.contents);
 
-// rules 多行输出
-let rulesContent = 'rules:\n';
-(parsedData.rules || []).forEach(rule => {
-  rulesContent += `  - ${rule}\n`;
-});
+  // 输出时关闭自动换行，让流式对象一行展示，数组块状换行
+  const yamlStr = doc.toString({ lineWidth: Infinity });
 
-// sub-rules 多行输出
-let subRulesContent = 'sub-rules:\n';
-Object.entries(parsedData['sub-rules'] || {}).forEach(([key, value]) => {
-  subRulesContent += `  ${key}:\n`;
-  value.forEach(rule => {
-    subRulesContent += `    - ${rule}\n`;
-  });
-});// 5. 合并内容并写入文件
-const finalContent = [
-  proxiesContent,
-  proxyGroupsContent,
-  rulesContent,
-  subRulesContent,
-  ruleProvidersContent,
-].join('\n');
+  await fs.writeFile(outputFile, yamlStr, 'utf8');
+  console.log(`✅ 完整格式化写入：${outputFile}`);
+}
 
-
-writeFileSync('output.yaml', finalContent);
+// 调用示例
+formatWholeYamlFile('Mihomo.yaml', 'Mihomo.yaml');
