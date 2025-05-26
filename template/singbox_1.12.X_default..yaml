@@ -192,11 +192,6 @@ outbounds:
       - action: include
         keywords:
           - "🇩🇪|\bDE\b|德国|Germany"
-  - type: selector
-    tag: 🐟 漏网之鱼
-    outbounds:
-      - 🚀 节点选择
-      - 🎯 全球直连
 route:
   rules:
     - action: sniff
