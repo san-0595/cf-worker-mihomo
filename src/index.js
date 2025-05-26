@@ -798,7 +798,7 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                             },
                             {
                                 label: "Loyalsoldier 全分组版",
-                                value: "https://raw.githubusercontent.com/sukonzer/SIA/main/config-template/singbox_1.12.X_Loyalsoldier.yaml"
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.12.X_Loyalsoldier.yaml"
                             }
                         ]
                     },
@@ -1107,7 +1107,6 @@ export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
         res.filter?.forEach(ac => {
             // 转换为 RegExp 对象
             const keywordReg = new RegExp(ac.keywords) || '';
-
             if (ac.action === 'include') {
                 // 只保留匹配的
                 matchedOutbounds = matchedOutbounds.filter(name => keywordReg.test(name));
@@ -1123,7 +1122,7 @@ export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
         });
         if (hasValidAction) {
             // 写入去重后的 outbounds
-            res.outbounds = [...new Set(matchedOutbounds)];
+            res.outbounds = [...res.outbounds, ...new Set(matchedOutbounds)];
         } else if (res.outbounds !== null) {
             // 没有有效操作，但原始 outbounds 存在，保留原值
             matchedOutbounds = res.outbounds;
