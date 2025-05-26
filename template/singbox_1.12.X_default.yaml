@@ -28,14 +28,14 @@ experimental:
 dns:
   servers:
     - { type: udp, tag: Ali-DNS-UDP, server: 223.5.5.5, server_port: 53 }
-    - { type: udp, tag: Ali2-DNS-UDP, server: 223.6.6.6, server_port: 53 }
-    - { tag: DIRECT-DNS, type: https, server_port: 443, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
-    - { tag: PROXY-DNS, type: https, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Ali2-DNS-UDP }
+    - { type: udp, tag: Google-DNS-UDP, server: 8.8.8.8, server_port: 53 }
+    - { type: https, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 443, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
+    - { type: https, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Google-DNS-UDP }
     - { type: fakeip, tag: FAKEIP-DNS, inet4_range: 198.18.0.0/15, inet6_range: fc00::/18 }
   rules:
     - { clash_mode: direct, server: DIRECT-DNS }
     - { clash_mode: global, server: PROXY-DNS }
-    - { rule_set: [ Geosite-CN ], server: DIRECT-DNS }
+    - { rule_set: [ Geosite-CN, fakeip_filter ], server: DIRECT-DNS }
     - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
   disable_cache: false
   disable_expire: false
@@ -67,13 +67,14 @@ route:
     - { clash_mode: direct, outbound: 🎯 全球直连 }
     - { clash_mode: global, outbound: 🚀 节点选择 }
     - { rule_set: [ AWAvenue-Ads ], outbound: 🪧 广告拦截 }
-    - { rule_set: [ GeoSite-Private, GeoIP-Private, GeoIP-CN ], outbound: 🎯 全球直连 }
+    - { rule_set: [ GeoSite-Private, GeoIP-Private, GeoIP-CN, fakeip_filter ], outbound: 🎯 全球直连 }
   rule_set:
     - { tag: AWAvenue-Ads, type: remote, url: https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Singbox.srs, format: binary, download_detour: 🚀 节点选择 }
     - { tag: GeoIP-Private, type: remote, url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs, format: binary, download_detour: 🚀 节点选择 }
     - { tag: GeoSite-Private, type: remote, url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs, format: binary, download_detour: 🚀 节点选择 }
     - { tag: Geosite-CN, type: remote, url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs, format: binary, download_detour: 🚀 节点选择 }
     - { tag: GeoIP-CN, type: remote, url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs, format: binary, download_detour: 🚀 节点选择 }
+    - { tag: fakeip_filter, type: remote, url: https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/fakeip-filter.srs, format: binary, download_detour: 🚀 节点选择 }
   auto_detect_interface: true
   final: 🚀 节点选择
   default_domain_resolver:

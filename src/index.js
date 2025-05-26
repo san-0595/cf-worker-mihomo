@@ -790,11 +790,15 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                         options: [
                             {
                                 label: "默认（精简版）",
-                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox-1.12.0-beta.17.json"
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.12.X_default.yaml"
                             },
                             {
                                 label: "sukonzer（精简版）",
                                 value: "https://raw.githubusercontent.com/sukonzer/SIA/main/config-template/sb-1.12.x.json"
+                            },
+                            {
+                                label: "Loyalsoldier 全分组版",
+                                value: "https://raw.githubusercontent.com/sukonzer/SIA/main/config-template/singbox_1.12.X_Loyalsoldier.yaml"
                             }
                         ]
                     },
