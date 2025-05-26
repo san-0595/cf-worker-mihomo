@@ -3,7 +3,7 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
         const userAgent = request.headers.get('User-Agent');
-        const isBrowser = /meta|clash.meta|clash|clashverge|mihomo|singbox|sing-box/i.test(userAgent);
+        const isBrowser = /meta|clash.meta|clash|clashverge|mihomo|singbox|sing-box|sfa/i.test(userAgent);
         const templateUrl = url.searchParams.get("template");
         const singbox = url.searchParams.get("singbox");
         // 处理 URL 参数
@@ -985,12 +985,11 @@ async function mihomoconfig(urls, templateUrl) {
     if (!templateUrl) {
         config = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo.yaml';
     } else {
-        const templateout = await fetchResponse(templateUrl);
-        const templateyaml = templateout.data
-        templatedata = YAML.parse(templateyaml, { maxAliasCount: -1, merge: true });
+        const templatejson = await fetchResponse(templateUrl);
+        templatedata = templatejson.data
     }
-    const mihomodata = await fetchResponse(config);
-    let data = YAML.parse(mihomodata.data, { maxAliasCount: -1, merge: true });
+    let mihomodata = await fetchResponse(config);
+    let data = mihomodata.data;
     const base = data.p || {};
     const override = data.override || {};
     const proxyProviders = {};
@@ -1095,7 +1094,7 @@ export async function loadAndMergeOutbounds(urls) {
         headers: headers
     };
 }
-
+// 策略组处理
 export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
     Outbounds.forEach(res => {
         // 从完整 outbound 名称开始匹配
@@ -1132,8 +1131,20 @@ export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
         delete res.filter;
         return res;
     });
-    // 删除空策略组
-    const filteredOutbounds = Outbounds.filter(item => {
+    // 找出被删除的策略组 tags（即 outbounds 为空的 selector）
+    const removedTags = Outbounds
+        .filter(item => item.type === 'selector' && Array.isArray(item.outbounds) && item.outbounds.length === 0)
+        .map(item => item.tag);
+    // 过滤掉引用了已删除 tag 的其他 outbounds 项
+    const cleanedOutbounds = Outbounds.map(item => {
+        if (Array.isArray(item.outbounds)) {
+            item.outbounds = item.outbounds.filter(tag => !removedTags.includes(tag));
+        }
+        return item;
+    });
+
+    // 再次过滤掉 outbounds 数组为空的策略组
+    const filteredOutbounds = cleanedOutbounds.filter(item => {
         return !(Array.isArray(item.outbounds) && item.outbounds.length === 0);
     });
     return filteredOutbounds
@@ -1158,10 +1169,14 @@ export async function fetchResponse(url) {
     const textData = await response.text();
     let jsonData;
     try {
-        jsonData = JSON.parse(textData);
+        jsonData = YAML.parse(textData, { maxAliasCount: -1, merge: true });
     } catch (e) {
-        // 如果转换失败，返回原始文本
-        jsonData = textData;
+        try {
+            jsonData = JSON.parse(textData);
+        } catch (yamlError) {
+            // 若YAML解析也失败，保留原始文本
+            parsedData = textData;
+        }
     }
     return {
         status: response.status,
