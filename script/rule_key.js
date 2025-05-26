@@ -4,9 +4,9 @@ import * as YAML from 'yaml';
 async function formatWholeYamlFile(inputFile, outputFile) {
   // 读取文件
   const text = await fs.readFile(inputFile, 'utf8');
-
+  const ext = YAML.stringify(YAML.parse(text));
   // 解析成 Document
-  const doc = YAML.parseDocument(text, { merge: true, maxAliasCount: -1 });
+  const doc = YAML.parseDocument(ext, { merge: true, maxAliasCount: -1 });
 
   // 递归处理节点，找到所有数组，对其元素做流式对象格式化
   function processNode(node) {
@@ -51,4 +51,4 @@ async function formatWholeYamlFile(inputFile, outputFile) {
 }
 
 // 调用示例
-formatWholeYamlFile('Mihomo.yaml', 'Mihomo.yaml');
+formatWholeYamlFile('Mihomo.json', 'Mihomo.yaml');

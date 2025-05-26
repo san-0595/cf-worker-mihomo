@@ -687,16 +687,28 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                         label: "通用",
                         options: [
                             {
-                                label: "默认（精简版）（仅国内外分流）",
+                                label: "默认（精简版）（仅国内外分流）[秋风_ads]",
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default.yaml"
+                            },
+                            {
+                                label: "默认（精简版）（仅国内外分流）[Dustinwin_ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_Ads_Dustinwin.yaml"
                             },
                             {
                                 label: "默认（精简版）（无去广告）",
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_NoAds.yaml"
                             },
                             {
-                                label: "默认（全分组）",
+                                label: "默认（全分组）[秋风_ads]",
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_full.yaml"
+                            },
+                            {
+                                label: "默认（全分组）[秋风_ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_full_Ads_Dustinwin.yaml"
+                            },
+                            {
+                                label: "默认（全分组）（无去广告）",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_full_NoAds.yaml"
                             }
                         ]
                     },
@@ -789,16 +801,16 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                         label: "1.12.X",
                         options: [
                             {
-                                label: "默认（精简版）",
+                                label: "默认（精简版）[秋风_ads]",
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.12.X_default.yaml"
                             },
                             {
-                                label: "sukonzer（精简版）",
-                                value: "https://raw.githubusercontent.com/sukonzer/SIA/main/config-template/sb-1.12.x.json"
+                                label: "默认（mini版）[geo_ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.12.X_default_mini.yaml"
                             },
                             {
-                                label: "Loyalsoldier 全分组版",
-                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.12.X_Loyalsoldier.yaml"
+                                label: "DustinWin 全分组版[ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.12.X_DustinWin_full.yaml"
                             }
                         ]
                     },
@@ -806,8 +818,16 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                         label: "1.11.X",
                         options: [
                             {
-                                label: "sukonzer（精简版）",
-                                value: "https://raw.githubusercontent.com/sukonzer/SIA/main/config-template/sb-1.11.x.json"
+                                label: "默认（精简版）[秋风_ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.11.X_default.yaml"
+                            },
+                            {
+                                label: "默认（mini版）[geo_ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.11.X_default_mini_Ads_Geo.yaml"
+                            },
+                            {
+                                label: "默认（mini版）[DustinWin_ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.11.X_default_mini_Ads_DustinWin.yaml"
                             }
                         ]
                     }

@@ -158,9 +158,7 @@
             "filter": [
                 {
                     "action": "all",
-                    "keywords": [
-                        ""
-                    ]
+                    "keywords": []
                 }
             ]
         },
