@@ -29,7 +29,7 @@ dns:
     - { outbound: any, server: Direct-dns }
     - { clash_mode: direct, server: Direct-dns }
     - { clash_mode: global, server: Proxy-dns }
-    - { rule_set: [ geosite-cn ], server: Direct-dns }
+    - { rule_set: [ Geosite-CN, fakeip_filter ], server: Direct-dns }
     - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
   final: Proxy-dns
   client_subnet: 223.5.5.5

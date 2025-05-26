@@ -35,7 +35,7 @@ dns:
   rules:
     - { clash_mode: direct, server: DIRECT-DNS }
     - { clash_mode: global, server: PROXY-DNS }
-    - { rule_set: [ Geosite-CN, fakeip_filter ], server: DIRECT-DNS, strategy: ipv4_only }
+    - { rule_set: [ geosite-cn ], server: DIRECT-DNS, strategy: ipv4_only }
     - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
   disable_cache: false
   disable_expire: false
