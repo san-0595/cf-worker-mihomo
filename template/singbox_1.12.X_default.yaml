@@ -35,7 +35,7 @@ dns:
   rules:
     - { clash_mode: direct, server: DIRECT-DNS }
     - { clash_mode: global, server: PROXY-DNS }
-    - { rule_set: [ Geosite-CN, fakeip_filter ], server: DIRECT-DNS }
+    - { rule_set: [ Geosite-CN, fakeip_filter ], server: DIRECT-DNS, strategy: ipv4_only }
     - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
   disable_cache: false
   disable_expire: false
@@ -49,9 +49,9 @@ outbounds:
   - { type: direct, tag: 🎯 全局直连 }
   - { type: block, tag: 🚫 拒绝连接 }
   - { type: selector, tag: 🚀 节点选择, outbounds: [ 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { type: selector, tag: 🟢 手动选择, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
   - { type: selector, tag: 🎯 全球直连, outbounds: [ 🎯 全局直连, 🚀 节点选择 ] }
   - { type: selector, tag: 🪧 广告拦截, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
-  - { type: selector, tag: 🟢 手动选择, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
   - { type: urltest, tag: 🎈 自动选择, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
   - { type: urltest, tag: 🇭🇰 香港自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
   - { type: urltest, tag: 🇹🇼 台湾自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
@@ -79,3 +79,4 @@ route:
   final: 🚀 节点选择
   default_domain_resolver:
     server: DIRECT-DNS
+    strategy: ipv4_only

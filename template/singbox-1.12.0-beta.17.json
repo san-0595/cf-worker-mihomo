@@ -82,7 +82,8 @@
                     "Geosite-CN",
                     "fakeip_filter"
                 ],
-                "server": "DIRECT-DNS"
+                "server": "DIRECT-DNS",
+                "strategy": "ipv4_only"
             },
             {
                 "query_type": [
@@ -152,6 +153,19 @@
         },
         {
             "type": "selector",
+            "tag": "🟢 手动选择",
+            "outbounds": [],
+            "filter": [
+                {
+                    "action": "all",
+                    "keywords": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "selector",
             "tag": "🎯 全球直连",
             "outbounds": [
                 "🎯 全局直连",
@@ -165,19 +179,6 @@
                 "🚫 拒绝连接",
                 "🎯 全局直连",
                 "🚀 节点选择"
-            ]
-        },
-        {
-            "type": "selector",
-            "tag": "🟢 手动选择",
-            "outbounds": [],
-            "filter": [
-                {
-                    "action": "all",
-                    "keywords": [
-                        ""
-                    ]
-                }
             ]
         },
         {
@@ -377,7 +378,8 @@
         "auto_detect_interface": true,
         "final": "🚀 节点选择",
         "default_domain_resolver": {
-            "server": "DIRECT-DNS"
+            "server": "DIRECT-DNS",
+            "strategy": "ipv4_only"
         }
     }
 }
