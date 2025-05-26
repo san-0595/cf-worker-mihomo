@@ -1133,7 +1133,7 @@ export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
     });
     // 找出被删除的策略组 tags（即 outbounds 为空的 selector）
     const removedTags = Outbounds
-        .filter(item => item.type === 'selector' && Array.isArray(item.outbounds) && item.outbounds.length === 0)
+        .filter(item => Array.isArray(item.outbounds) && item.outbounds.length === 0)
         .map(item => item.tag);
     // 过滤掉引用了已删除 tag 的其他 outbounds 项
     const cleanedOutbounds = Outbounds.map(item => {
