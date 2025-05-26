@@ -65,7 +65,6 @@ outbounds:
   - { tag: 🇺🇸 美国自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
   - { tag: 🇸🇬 新加坡自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
   - { tag: 🇩🇪 德国自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
-  - { tag: 🇭🇰 香港自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
 route:
   rules:
     - { action: sniff }

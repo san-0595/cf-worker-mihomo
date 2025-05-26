@@ -53,12 +53,6 @@ outbounds:
   - { type: selector, tag: 🎯 全球直连, outbounds: [ 🎯 全局直连, 🚀 节点选择 ] }
   - { type: selector, tag: 🪧 广告拦截, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
   - { type: urltest, tag: 🎈 自动选择, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
-  - { type: urltest, tag: 🇭🇰 香港自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
-  - { type: urltest, tag: 🇹🇼 台湾自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
-  - { type: urltest, tag: 🇯🇵 日本自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇯🇵|\bJP\b|日本|Japan" ] } ] }
-  - { type: urltest, tag: 🇺🇸 美国自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
-  - { type: urltest, tag: 🇸🇬 新加坡自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
-  - { type: urltest, tag: 🇩🇪 德国自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
   - { type: selector, tag: apple, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { type: selector, tag: appletv, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { type: selector, tag: bilibili, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
@@ -75,6 +69,13 @@ outbounds:
   - { type: selector, tag: telegram, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { type: selector, tag: tiktok, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { type: selector, tag: youtube, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { type: urltest, tag: 🇭🇰 香港自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
+  - { type: urltest, tag: 🇹🇼 台湾自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
+  - { type: urltest, tag: 🇯🇵 日本自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇯🇵|\bJP\b|日本|Japan" ] } ] }
+  - { type: urltest, tag: 🇺🇸 美国自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
+  - { type: urltest, tag: 🇸🇬 新加坡自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
+  - { type: urltest, tag: 🇩🇪 德国自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
+
 route:
   rules:
     - { action: sniff }
