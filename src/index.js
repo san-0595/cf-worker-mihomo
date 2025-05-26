@@ -703,7 +703,7 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_full.yaml"
                             },
                             {
-                                label: "默认（全分组）[秋风_ads]",
+                                label: "默认（全分组）[Dustinwin_ads]",
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_default_full_Ads_Dustinwin.yaml"
                             },
                             {
