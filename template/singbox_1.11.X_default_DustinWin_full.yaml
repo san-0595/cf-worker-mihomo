@@ -1,53 +1,45 @@
 log:
   disabled: false
-  level: info
-  output: ""
-  timestamp: false
+  level: warn
+  timestamp: true
 experimental:
   clash_api:
     external_controller: 0.0.0.0:20123
     external_ui: ui
+    secret: ""
     external_ui_download_url: https://ghfast.top/https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip
     external_ui_download_detour: 🎯 全球直连
-    secret: ""
     default_mode: rule
-    access_control_allow_origin:
-      - http://127.0.0.1
-      - http://localhost
-      - https://yacd.metacubex.one
-      - https://d.metacubex.one
-      - https://board.zash.run.place
-    access_control_allow_private_network: true
   cache_file:
     enabled: true
     path: cache.db
-    cache_id: ""
     store_fakeip: true
-    store_rdrc: true
-    rdrc_timeout: 1d
 dns:
+  fakeip:
+    enabled: true
+    inet4_range: 198.18.0.0/15
+    inet6_range: fc00::/18
   servers:
-    - { type: udp, tag: Ali-DNS-UDP, server: 223.5.5.5, server_port: 53 }
-    - { type: udp, tag: Google-DNS-UDP, server: 8.8.8.8, server_port: 53 }
-    - { type: https, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 443, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
-    - { type: https, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Google-DNS-UDP }
-    - { type: fakeip, tag: FAKEIP-DNS, inet4_range: 198.18.0.0/15, inet6_range: fc00::/18 }
+    - { tag: ali-dns-udp, address: 223.5.5.5 }
+    - { tag: googlg-dns-udp, address: 8.8.8.8 }
+    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: https://dns.alidns.com/dns-query, detour: 🎯 全球直连, strategy: ipv4_only }
+    - { tag: Proxy-dns, address_resolver: googlg-dns-udp, address: https://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
+    - { tag: fakeip, address: fakeip }
   rules:
-    - { clash_mode: direct, server: DIRECT-DNS }
-    - { clash_mode: global, server: PROXY-DNS }
-    - { rule_set: [ cn, private, fakeip_filter ], server: DIRECT-DNS, strategy: ipv4_only }
-    - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
-  disable_cache: false
-  disable_expire: false
+    - { outbound: any, server: Direct-dns }
+    - { clash_mode: direct, server: Direct-dns }
+    - { clash_mode: global, server: Proxy-dns }
+    - { rule_set: [ cn, private, fakeip_filter ], server: Direct-dns }
+    - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
+  final: Proxy-dns
+  client_subnet: 223.5.5.5
   independent_cache: true
-  final: PROXY-DNS
-  strategy: prefer_ipv4
 inbounds:
-  - { type: tun, tag: tun-in, interface_name: utun0, address: [ 172.18.0.1/30, fdfe:dcba:9876::1/126 ], mtu: 9000, auto_route: true, strict_route: true, endpoint_independent_nat: false, stack: gvisor, platform: { http_proxy: { enabled: false, server: 127.0.0.1, server_port: 8080 } } }
+  - { tag: tun-in, type: tun, address: [ 172.19.0.1/30, fdfe:dcba:9876::1/126 ], mtu: 9000, stack: system, auto_route: true }
   - { tag: mixed-in, type: mixed, listen: 0.0.0.0, listen_port: 20120 }
 outbounds:
-  - { type: direct, tag: 🎯 全局直连 }
-  - { type: block, tag: 🚫 拒绝连接 }
+  - { tag: 🎯 全局直连, type: direct }
+  - { tag: 🚫 拒绝连接, type: block }
   - { type: selector, tag: 🚀 节点选择, outbounds: [ 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { type: selector, tag: 🟢 手动选择, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
   - { type: selector, tag: 🎯 全球直连, outbounds: [ 🎯 全局直连, 🚀 节点选择 ] }
@@ -76,9 +68,11 @@ outbounds:
   - { type: urltest, tag: 🇸🇬 新加坡自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
   - { type: urltest, tag: 🇩🇪 德国自动, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
 route:
+  auto_detect_interface: true
+  final: 🚀 节点选择
   rules:
     - { action: sniff }
-    - { port: 53, action: hijack-dns }
+    - { type: logical, mode: or, rules: [ { port: 53 }, { protocol: dns } ], action: hijack-dns }
     - { ip_is_private: true, outbound: 🎯 全球直连 }
     - { clash_mode: direct, outbound: 🎯 全球直连 }
     - { clash_mode: global, outbound: 🚀 节点选择 }
@@ -126,8 +120,3 @@ route:
     - { tag: telegram_ip, type: remote, url: https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs, format: binary, download_detour: 🚀 节点选择 }
     - { tag: tiktok, type: remote, url: https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/tiktok.srs, format: binary, download_detour: 🚀 节点选择 }
     - { tag: youtube, type: remote, url: https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/youtube.srs, format: binary, download_detour: 🚀 节点选择 }
-  auto_detect_interface: true
-  final: 🚀 节点选择
-  default_domain_resolver:
-    server: DIRECT-DNS
-    strategy: ipv4_only

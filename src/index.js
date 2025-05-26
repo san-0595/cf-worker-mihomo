@@ -828,6 +828,10 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                             {
                                 label: "默认（mini版）[DustinWin_ads]",
                                 value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.11.X_default_mini_Ads_DustinWin.yaml"
+                            },
+                            {
+                                label: "DustinWin 全分组版[ads]",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/singbox_1.11.X_default_DustinWin_full.yaml"
                             }
                         ]
                     }

@@ -29,7 +29,7 @@ dns:
     - { outbound: any, server: Direct-dns }
     - { clash_mode: direct, server: Direct-dns }
     - { clash_mode: global, server: Proxy-dns }
-    - { rule_set: [ geosite-cn ], server: Direct-dns }
+    - { rule_set: [ geosite-cn, geosite-geolocation-cn, geosite-apple, geosite-microsoft ], server: Direct-dns }
     - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
   final: Proxy-dns
   client_subnet: 223.5.5.5
@@ -74,7 +74,7 @@ route:
     - { rule_set: [ geoip-telegram, geosite-telegram ], outbound: 📲 Telegram }
     - { rule_set: [ geoip-netflix, geosite-netflix ], outbound: 🎥 Netflix }
     - { rule_set: geosite-geolocation-!cn, outbound: 🚀 节点选择 }
-    - { rule_set: [ geoip-cn, geosite-cn, geosite-geolocation-cn, geoip-apple, geosite-apple, geosite-microsoft ], outbound: 🎯 全球直连 }
+    - { rule_set: [ geoip-cn, geosite-geolocation-cn, geoip-apple, geosite-apple, geosite-microsoft ], outbound: 🎯 全球直连 }
   rule_set:
     - { tag: geosite-category-ads-all, type: remote, format: binary, url: https://gitproxy.click/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/category-ads-all.srs, download_detour: 🎯 全球直连 }
     - { tag: geosite-ai, type: remote, format: binary, url: https://gitproxy.click/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/category-ai-!cn.srs, download_detour: 🎯 全球直连 }
