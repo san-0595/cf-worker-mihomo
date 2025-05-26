@@ -52,20 +52,20 @@ outbounds:
   - { tag: 🟢 手动选择, type: selector, outbounds: [], filter: [ { action: all, keywords: [] } ] }
   - { tag: 🎯 全球直连, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择 ] }
   - { tag: 🪧 广告拦截, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
-  - { tag: 🎈 自动选择, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [] } ] }
+  - { tag: 🎈 自动选择, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [] } ] }
   - { tag: 🔍 Google, type: selector, outbounds: [ 🚀 节点选择, 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { tag: 📹 YouTube, type: selector, outbounds: [ 🚀 节点选择, 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { tag: 🤖 AI, type: selector, outbounds: [ 🚀 节点选择, 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { tag: 🎵 TikTok, type: selector, outbounds: [ 🚀 节点选择, 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { tag: 🎥 Netflix, type: selector, outbounds: [ 🚀 节点选择, 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
   - { tag: 📲 Telegram, type: selector, outbounds: [ 🚀 节点选择, 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 🇭🇰 香港自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
-  - { tag: 🇹🇼 台湾自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
-  - { tag: 🇯🇵 日本自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇯🇵|\bJP\b|日本|Japan" ] } ] }
-  - { tag: 🇺🇸 美国自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
-  - { tag: 🇸🇬 新加坡自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
-  - { tag: 🇩🇪 德国自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
-  - { tag: 🇭🇰 香港自动, type: selector, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
+  - { tag: 🇭🇰 香港自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
+  - { tag: 🇹🇼 台湾自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
+  - { tag: 🇯🇵 日本自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇯🇵|\bJP\b|日本|Japan" ] } ] }
+  - { tag: 🇺🇸 美国自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
+  - { tag: 🇸🇬 新加坡自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
+  - { tag: 🇩🇪 德国自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
+  - { tag: 🇭🇰 香港自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
 route:
   rules:
     - { action: sniff }
