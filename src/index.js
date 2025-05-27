@@ -1007,20 +1007,27 @@ function isValidURL(url) {
 // mihomo 配置
 async function mihomoconfig(urls, templateUrl) {
     urls = urls.map(u => decodeURIComponent(u));
-    templateUrl = decodeURIComponent(templateUrl)
     let config = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo_lite.yaml';
     let templatedata;
+    let urlheaders;
     if (!templateUrl) {
         config = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo.yaml';
     } else {
         const templatejson = await fetchResponse(templateUrl);
         templatedata = templatejson.data
     }
-    let mihomodata = await fetchResponse(config);
-    let data = mihomodata.data;
+    const { data } = await fetchResponse(config);
     const base = data.p || {};
     const override = data.override || {};
     const proxyProviders = {};
+    if (urls.length === 1) {
+        urlheaders = await fetchResponse(urls[0]);
+    } else {
+        const index = Math.floor(Math.random() * urls.length);
+        const selectedUrl = urls[index];
+        urlheaders = await fetchResponse(selectedUrl);
+    }
+    console.log('xiangyingtopu :', urlheaders);
     urls.forEach((url, i) => {
         proxyProviders[`provider${i + 1}`] = {
             ...base,
@@ -1041,31 +1048,38 @@ async function mihomoconfig(urls, templateUrl) {
         data['rule-providers'] = templatedata['rule-providers'] || {};
     }
     return {
-        status: mihomodata.status,
-        data: JSON.stringify(data, null, 4),
-        headers: mihomodata.headers
+        status: urlheaders.status,
+        headers: urlheaders.headers,
+        data: JSON.stringify(data, null, 4)
     }
 }
 // singbox 配置
 async function singboxconfig(urls, templateUrl) {
     // 模板
-    const templatedata = await fetchResponse(templateUrl)
-    const templatejson = templatedata.data
+    const templatedata = await fetchResponse(templateUrl);
+    const templatejson = templatedata.data;
     // 节点
     const outboundsdata = await loadAndMergeOutbounds(urls);
-    const outboundsjson = outboundsdata.data
-    const ApiUrlname = [] // 节点名
+    const outboundsjson = outboundsdata.data;
+    const ApiUrlname = []; // 节点名
     outboundsjson.forEach((res) => {
-        ApiUrlname.push(res.tag)
-    })
+        ApiUrlname.push(res.tag);
+    });
     // 策略组处理
-    templatejson.outbounds = loadAndSetOutbounds(templatejson.outbounds, ApiUrlname)
+    templatejson.outbounds = loadAndSetOutbounds(templatejson.outbounds, ApiUrlname);
     // 节点合并
-    templatejson.outbounds.push(...outboundsjson)
+    templatejson.outbounds.push(...outboundsjson);
+    // 删除锚点
+    if (Array.isArray(templatejson.delete)) {
+        for (const key of templatejson.delete) {
+            delete templatejson[key];
+        }
+        delete templatejson.delete;
+    }
     return {
         status: outboundsdata.status,
-        data: JSON.stringify(templatejson),
-        headers: outboundsdata.headers
+        headers: outboundsdata.headers,
+        data: JSON.stringify(templatejson)
     };
 }
 
@@ -1099,7 +1113,7 @@ export async function loadAndMergeOutbounds(urls) {
         try {
             const outboundsdata = await fetchResponse(outboundsUrl);
             const outboundsJson = outboundsdata.data
-            headers = outboundsdata.headers
+            headers = outboundsdata
 
             if (outboundsJson && Array.isArray(outboundsJson.outbounds)) {
                 const sequence = i + 1;
@@ -1118,8 +1132,9 @@ export async function loadAndMergeOutbounds(urls) {
     }
 
     return {
-        data: outboundsList,
-        headers: headers
+        status: headers.status,
+        headers: headers.headers,
+        data: outboundsList
     };
 }
 // 策略组处理
@@ -1194,7 +1209,7 @@ export async function fetchResponse(url) {
     }
     // 获取响应体的文本内容
     const textData = await response.text();
-    let jsonData;
+    let jsonData = "";
     try {
         jsonData = YAML.parse(textData, { maxAliasCount: -1, merge: true });
     } catch (e) {
@@ -1202,7 +1217,7 @@ export async function fetchResponse(url) {
             jsonData = JSON.parse(textData);
         } catch (yamlError) {
             // 若YAML解析也失败，保留原始文本
-            parsedData = textData;
+            jsonData = textData;
         }
     }
     return {
