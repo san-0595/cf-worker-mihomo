@@ -21,7 +21,7 @@ dns:
     inet6_range: fc00::/18
   servers:
     - { tag: ali-dns-udp, address: 223.5.5.5, detour: 🎯 全球直连 }
-    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: https://dns.alidns.com/dns-query, detour: 🎯 全球直连, strategy: ipv4_only }
+    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: https://dns.alidns.com/dns-query, detour: 🎯 全球直连, strategy: prefer_ipv4 }
     - { tag: Proxy-dns, address_resolver: ali-dns-udp, address: https://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
     - { tag: fakeip, address: fakeip }
   rules:
