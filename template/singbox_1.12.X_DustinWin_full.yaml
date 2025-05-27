@@ -136,7 +136,7 @@ outbounds:
   - { tag: 🪧 广告拦截, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
   - { tag: 💧 泄漏拦截, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
   - { tag: 🔎 HttpDNS, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
-  - { tag: 🎈 自动选择, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
+  - { tag: 🎈 自动选择, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
   - { tag: apple, <<: *direct }
   - { tag: appletv, <<: *direct }
   - { tag: bilibili, <<: *direct }
