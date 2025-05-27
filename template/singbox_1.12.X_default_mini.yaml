@@ -47,10 +47,9 @@ experimental:
     rdrc_timeout: 1d
 dns:
   servers:
-    - { type: udp, tag: Ali-DNS-UDP, server: 223.5.5.5, server_port: 53 }
-    - { type: udp, tag: Google-DNS-UDP, server: 8.8.8.8, server_port: 53 }
+    - { type: udp, tag: Ali-DNS-UDP, server: 223.5.5.5, server_port: 53, detour: 🎯 全球直连 }
     - { type: https, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 443, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
-    - { type: https, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Google-DNS-UDP }
+    - { type: https, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Ali-DNS-UDP }
     - { type: fakeip, tag: FAKEIP-DNS, inet4_range: 198.18.0.0/15, inet6_range: fc00::/18 }
   rules:
     - { clash_mode: direct, server: DIRECT-DNS }

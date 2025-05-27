@@ -20,10 +20,9 @@ dns:
     inet4_range: 198.18.0.0/15
     inet6_range: fc00::/18
   servers:
-    - { tag: ali-dns-udp, address: 223.5.5.5 }
-    - { tag: googlg-dns-udp, address: 8.8.8.8 }
+    - { tag: ali-dns-udp, address: 223.5.5.5, 🎯 全球直连 }
     - { tag: Direct-dns, address_resolver: ali-dns-udp, address: https://dns.alidns.com/dns-query, detour: 🎯 全球直连, strategy: ipv4_only }
-    - { tag: Proxy-dns, address_resolver: googlg-dns-udp, address: https://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
+    - { tag: Proxy-dns, address_resolver: ali-dns-udp, address: https://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
     - { tag: fakeip, address: fakeip }
   rules:
     - { outbound: any, server: Direct-dns }
