@@ -59,8 +59,8 @@ route:
   auto_detect_interface: true
   final: 🚀 节点选择
   rules:
-    - { action: sniff }
-    - { type: logical, mode: or, rules: [ { port: 53 }, { protocol: dns } ], action: hijack-dns }
+    - { inbound: tun-in, action: sniff }
+    - { protocol: dns, action: hijack-dns }
     - { ip_is_private: true, outbound: 🎯 全球直连 }
     - { clash_mode: direct, outbound: 🎯 全球直连 }
     - { clash_mode: global, outbound: 🚀 节点选择 }
@@ -82,7 +82,6 @@ route:
     - { tag: BlockHttpDNS, type: remote, url: https://cdn.jsdmirror.com/gh/senshinya/singbox_ruleset@main/rule/BlockHttpDNS/BlockHttpDNS.srs, format: binary, download_detour: 🎯 全球直连 }
 inbounds:
   - { tag: tun-in, type: tun, address: [ 172.19.0.1/30, fdfe:dcba:9876::1/126 ], mtu: 9000, stack: system, auto_route: true }
-  - { tag: mixed-in, type: mixed, listen: 0.0.0.0, listen_port: 20120 }
 outbounds:
   - { type: direct, tag: 🎯 全局直连 }
   - { type: block, tag: 🚫 拒绝连接 }
