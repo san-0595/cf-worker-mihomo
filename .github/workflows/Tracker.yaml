@@ -66,7 +66,7 @@ jobs:
         mihomo convert-ruleset domain yaml rules/mihomo/Tracker/Tracker_Domain.yaml rules/mihomo/Tracker/Tracker_Domain.mrs
         mihomo convert-ruleset ipcidr yaml rules/mihomo/Tracker/Tracker_IP.yaml rules/mihomo/Tracker/Tracker_IP.mrs
         sing-box rule-set compile --output rules/singbox/Tracker/Tracker.srs rules/singbox/Tracker/Tracker.json
-        rm -rf sing-box-bin
+        rm -rf sing-box-bin sing-box*
 
     - name: Commit and Push Changes
       run: |
