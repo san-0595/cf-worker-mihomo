@@ -866,6 +866,7 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                     optionElement.className = 'template-option';
                     optionElement.textContent = option.label;
                     optionElement.dataset.value = option.value;
+                    optionElement.dataset.group = group.label;
 
                     optionElement.addEventListener('click', function () {
                         // 移除之前选中的样式
@@ -874,7 +875,7 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                         });
 
                         // 更新显示文本
-                        templateToggle.textContent = \`选择配置模板（\${option.label}）\`;
+                        templateToggle.textContent = \`\${group.label}-\${option.label}\`;
 
                         // 添加选中样式
                         this.classList.add('selected');
@@ -892,7 +893,10 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
             const firstOption = document.querySelector(\`\${selectorClass} .template-option\`);
             if (firstOption) {
                 firstOption.classList.add('selected');
-                templateToggle.textContent = \`选择配置模板（\${firstOption.textContent}）\`;
+                const groupLabel = firstOption.dataset.group;
+                const optionLabel = firstOption.textContent;
+                templateToggle.textContent = \`请选择配置模板（默认-\${groupLabel}）\`;
+                // templateToggle.textContent = \`请选择配置模板（\${groupLabel}-\${firstOption.textContent}）\`;
             }
 
             // 点击切换按钮展开/折叠选项
