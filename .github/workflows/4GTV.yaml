@@ -18,6 +18,13 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version: node
+
+    - name: nodejs install 
+      run: npm i
+
     - name: Set up Git user
       run: |
         git config user.name "github-actions[bot]"
@@ -50,68 +57,10 @@ jobs:
           chmod +x sing-box-bin/sing-box
           echo "$GITHUB_WORKSPACE/sing-box-bin" >> $GITHUB_PATH
 
-    - name: Fetch 4GTV Rules
+    - name: Generate 4GTV rules
       run: |
-        mkdir -p rules/mihomo/4GTV  # 确保目录存在
-        mkdir -p rules/singbox/4GTV
-        # 下载 4GTV 规则文件
-        curl -sL "https://cdn.jsdelivr.net/gh/antn0000/fenliu@main/4GTV.list" -o rules/mihomo/4GTV/4GTV.text
-        # 使用 sed 去除每行的前后空格
-        sed 's/^[[:space:]]*//;s/[[:space:]]*$//' rules/mihomo/4GTV/4GTV.text > rules/mihomo/4GTV/4GTV.list
-
-    - name: Separate domain rules
-      run: |
-        # 提取域名规则并保存到 4GTV-domain.list
-        grep '^DOMAIN-SUFFIX' rules/mihomo/4GTV/4GTV.list > rules/mihomo/4GTV/4GTV_Domain.list
-        grep '^DOMAIN' rules/mihomo/4GTV/4GTV.list >> rules/mihomo/4GTV/4GTV_Domain.list
-
-    - name: Convert 4GTV domain rules to YAML
-      run: |
-        # 将域名规则转换为 YAML 格式
-        echo 'payload:' > rules/mihomo/4GTV/4GTV_Domain.yaml
-        while IFS=, read -r type domain || [[ -n $type || -n $domain ]]; do
-          if [[ -n "$domain" && ! "$domain" =~ ^# ]]; then
-            # 如果是 DOMAIN-SUFFIX 规则，前面加上 *.
-            if [[ "$type" == "DOMAIN-SUFFIX" ]]; then
-              domain="+.$domain"
-            fi
-            # 写入到 YAML 文件
-            echo "  - '$domain'" >> rules/mihomo/4GTV/4GTV_Domain.yaml
-          fi
-        done < rules/mihomo/4GTV/4GTV_Domain.list
-
-    - name: Generate 4GTV rules to JSON 
-      run: |
-          echo '{' > rules/singbox/4GTV/4GTV.json
-          echo '  "version": 3,' >> rules/singbox/4GTV/4GTV.json
-
-          # domain_suffix
-          echo '  "domain_suffix": [' >> rules/singbox/4GTV/4GTV.json
-          first=1
-          for entry in $(yq '.payload[]' rules/mihomo/4GTV/4GTV_Domain.yaml | grep '^\+"\.\|^\+\.' | sed 's/^"+\.//;s/^+\.//;s/"$//'); do
-            if [ $first -eq 1 ]; then
-              echo "    \"$entry\"" >> rules/singbox/4GTV/4GTV.json
-              first=0
-            else
-              echo "    ,\"$entry\"" >> rules/singbox/4GTV/4GTV.json
-            fi
-          done
-          echo '  ],' >> rules/singbox/4GTV/4GTV.json
-
-          # domain
-          echo '  "domain": [' >> rules/singbox/4GTV/4GTV.json
-          first=1
-          for entry in $(yq '.payload[]' rules/mihomo/4GTV/4GTV_Domain.yaml | grep -v '^\+\.' | grep -vE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(/[0-9]+)?$' | sed 's/^"//;s/"$//'); do
-            if [ $first -eq 1 ]; then
-              echo "    \"$entry\"" >> rules/singbox/4GTV/4GTV.json
-              first=0
-            else
-              echo "    ,\"$entry\"" >> rules/singbox/4GTV/4GTV.json
-            fi
-          done
-          echo '  ],' >> rules/singbox/4GTV/4GTV.json
-          echo '}' >> rules.json
-     
+        node ./script/4GTV.js
+               
     - name: Convert 4GTV domain rules to MRS
       run: |
         # 使用 mihomo 转换为 MRS 格式
