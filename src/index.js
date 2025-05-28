@@ -749,6 +749,10 @@ async function getFakePage(image = 'https://t.alcy.cc/ycy') {
                                 value: "https://raw.githubusercontent.com/mihomo-party-org/override-hub/main/yaml/%E5%B8%83%E4%B8%81%E7%8B%97%E7%9A%84%E8%AE%A2%E9%98%85%E8%BD%AC%E6%8D%A2.yaml"
                             },
                             {
+                                label: "6D 自用模板 ",
+                                value: "https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/template/Mihomo_6D_自用模板.yaml"
+                            },
+                            {
                                 label: "ACL4SSR_Online_Full 全分组版 (与Github同步)",
                                 value: "https://raw.githubusercontent.com/mihomo-party-org/override-hub/main/yaml/ACL4SSR_Online_Full.yaml"
                             },
