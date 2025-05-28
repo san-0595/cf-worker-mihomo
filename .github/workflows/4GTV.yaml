@@ -30,30 +30,25 @@ jobs:
           gunzip -c > /usr/local/bin/mihomo && chmod +x /usr/local/bin/mihomo
 
     - name: Install latest sing-box binary
-       run: |
-         set -e -o pipefail
-         ARCH_RAW=$(uname -m)
-         case "${ARCH_RAW}" in
-           'x86_64')    ARCH='amd64';;
-           'x86' | 'i686' | 'i386')     ARCH='386';;
-           'aarch64' | 'arm64') ARCH='arm64';;
-           'armv7l')   ARCH='armv7';;
-           's390x')    ARCH='s390x';;
-           *)          echo "Unsupported architecture: ${ARCH_RAW}"; exit 1;;
-         esac
+      run: |
+          set -e -o pipefail
+          ARCH_RAW=$(uname -m)
+          case "${ARCH_RAW}" in
+              'x86_64') ARCH='amd64';;
+              'x86' | 'i686' | 'i386') ARCH='386';;
+              'aarch64' | 'arm64') ARCH='arm64';;
+              'armv7l') ARCH='armv7';;
+              's390x') ARCH='s390x';;
+              *) echo "Unsupported architecture: ${ARCH_RAW}"; exit 1;;
+          esac
 
-         VERSION=$(curl -s https://api.github.com/repos/SagerNet/sing-box/releases/latest \
-           | grep tag_name \
-           | cut -d ":" -f2 \
-           | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
+          VERSION=$(curl -s https://api.github.com/repos/SagerNet/sing-box/releases/latest | grep tag_name | cut -d ":" -f2 | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
 
-         echo "Latest sing-box version: $VERSION"
-
-         curl -Lo sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box-${VERSION}-linux-${ARCH}.tar.gz"
-         mkdir -p sing-box-bin
-         tar -xzf sing-box.tar.gz -C sing-box-bin --strip-components=1
-         chmod +x sing-box-bin/sing-box
-         echo "$GITHUB_WORKSPACE/sing-box-bin" >> $GITHUB_PATH
+          curl -Lo sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box-${VERSION}-linux-${ARCH}.tar.gz"
+          mkdir -p sing-box-bin
+          tar -xzf sing-box.tar.gz -C sing-box-bin --strip-components=1
+          chmod +x sing-box-bin/sing-box
+          echo "$GITHUB_WORKSPACE/sing-box-bin" >> $GITHUB_PATH
 
     - name: Fetch 4GTV Rules
       run: |
