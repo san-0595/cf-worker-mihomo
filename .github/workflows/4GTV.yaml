@@ -81,7 +81,7 @@ jobs:
         done < rules/mihomo/4GTV/4GTV_Domain.list
 
     - name: Generate 4GTV rules to JSON 
-        run: |
+      run: |
           echo '{' > rules/singbox/4GTV/4GTV.json
           echo '  "version": 3,' >> rules/singbox/4GTV/4GTV.json
 
