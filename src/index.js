@@ -964,7 +964,7 @@ async function getRandomProviderHeader(urls, base, override) {
             });
             if (res.data && Array.isArray(res.data.proxies)) {
                 res.data.proxies.forEach((p) => {
-                    p.name = `${p.name} [${i}]`;
+                    p.name = `${p.name} [${i + 1}]`;
                 });
                 proxies.push(...res.data.proxies);
             } else {
