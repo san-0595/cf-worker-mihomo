@@ -1,4 +1,5 @@
 import YAML from 'yaml';
+import crypto from 'crypto';
 const backimg = 'https://t.alcy.cc/ycy';
 const subapi = 'https://url.v1.mk';
 const mihomo = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo_lite.yaml';
@@ -866,52 +867,146 @@ function isValidURL(url) {
 }
 
 // mihomo 配置
-async function mihomoconfig(urls, templateUrl, config) {
-    urls = urls.map(u => decodeURIComponent(u));
-    let templatedata;
-    let urlheaders;
-    if (!templateUrl) {
-        config = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo.yaml';
-    } else {
-        const templatejson = await fetchResponse(templateUrl);
-        templatedata = templatejson.data
+/**
+ * 根据给定的 URLs、模板地址和配置地址，生成最终的 mihomo 配置数据
+ * @param {string[]} urls - 订阅地址数组
+ * @param {string} templateUrl - 模板配置文件地址（可选）
+ * @param {string} configUrl - 基础配置地址（可选）
+ * @returns {Promise<{status:number, headers:Object, data:string}>} - 返回状态、响应头和配置 JSON 字符串
+ */
+async function mihomoconfig(urls, templateUrl, configUrl) {
+    const templatedata = await getTemplateData(templateUrl);
+    const configData = await getConfigData(configUrl);
+    const selectedHeader = await getRandomProviderHeader(urls, configData.data.p, configData.data.override);
+    if (selectedHeader?.data?.proxies) {
+        templatedata.proxies = [...templatedata.proxies, ...selectedHeader.data?.proxies]
+        console.log(selectedHeader?.data?.proxies)
+        if (!selectedHeader?.data?.providers) {
+            configData.data['proxy-providers'] = {}
+        }
     }
-    const { data } = await fetchResponse(config);
-    const base = data.p || {};
-    const override = data.override || {};
-    const proxyProviders = {};
-    if (urls.length === 1) {
-        urlheaders = await fetchResponse(urls[0], 'clash');
-    } else {
-        const index = Math.floor(Math.random() * urls.length);
-        const selectedUrl = urls[index];
-        urlheaders = await fetchResponse(selectedUrl, 'clash');
+    if (selectedHeader?.data?.providers) {
+        configData.data['proxy-providers'] = selectedHeader.data.providers || {};
+        console.log(selectedHeader?.data?.providers)
     }
-    urls.forEach((url, i) => {
-        proxyProviders[`provider${i + 1}`] = {
-            ...base,
-            url: url,
-            path: `./proxies/provider${i + 1}.yaml`,
-            override: {
-                ...override,
-                "additional-suffix": ` ${i + 1}`
-            }
-        };
-    });
-    data['proxy-providers'] = proxyProviders;
     if (templatedata) {
-        data.proxies = templatedata.proxies || [];
-        data['proxy-groups'] = templatedata['proxy-groups'] || [];
-        data.rules = templatedata.rules || [];
-        data['sub-rules'] = templatedata['sub-rules'] || {};
-        data['rule-providers'] = templatedata['rule-providers'] || {};
+        applyTemplate(configData.data, templatedata);
     }
+
     return {
-        status: urlheaders.status,
-        headers: urlheaders.headers,
-        data: JSON.stringify(data, null, 4)
+        status: selectedHeader.status,
+        headers: selectedHeader.headers,
+        data: JSON.stringify(configData.data, null, 4)
+    };
+}
+/**
+ * 获取模板数据
+ * @param {string} templateUrl - 模板文件地址
+ * @returns {Promise<Object|null>} - 返回模板数据对象，或没有模板时返回 null
+ */
+async function getTemplateData(templateUrl) {
+    if (!templateUrl) return null;
+    const response = await fetchResponse(templateUrl);
+    return response.data;
+}
+/**
+ * 获取基础配置数据，若未提供则使用默认配置地址
+ * @param {string} configUrl - 配置文件地址
+ * @returns {Promise<Object>} - 返回配置数据对象
+ */
+async function getConfigData(configUrl) {
+    if (!configUrl) {
+        configUrl = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo.yaml';
+    }
+    return await fetchResponse(configUrl);
+}
+/**
+ * 随机从多个订阅 URL 中获取其响应头中的 subscription-userinfo 信息
+ * 如果只有一个 URL，直接返回其 subscription-userinfo
+ * @param {string[]} urls - 订阅地址列表
+ * @returns {Promise<{status: number, headers: Object, data: any}>} - 包含状态码、响应头和 subscription-userinfo 字符串
+ */
+async function getRandomProviderHeader(urls, base, override) {
+    const proxies = [];
+    const configData = {
+        'proxy-providers': {}
+    };
+    if (urls.length === 1) {
+        const res = await fetchResponse(urls[0], 'v2ray');
+
+        if (res.data.proxies && Array.isArray(res.data.proxies)) {
+            return {
+                status: res.status,
+                headers: res.headers,
+                data: res.data,
+            };
+        } else {
+            configData['proxy-providers']['provider'] = {
+                ...base,
+                url: urls[0],
+                path: `./proxies/${generateMD5(urls[0])}.yaml`,
+                override: {
+                    ...override,
+                    'additional-suffix': '',
+                },
+            };
+            return {
+                status: res.status,
+                headers: res.headers,
+                data: { providers: configData['proxy-providers'] },
+            };
+        }
+    } else {
+        let hesList = [];
+        for (let i = 0; i < urls.length; i++) {
+            const res = await fetchResponse(urls[i], 'v2ray');
+            hesList.push({
+                status: res.status,
+                headers: res.headers,
+            });
+            if (res.data && Array.isArray(res.data.proxies)) {
+                res.data.proxies.forEach((p) => {
+                    p.name = `${p.name} [${i}]`;
+                });
+                proxies.push(...res.data.proxies);
+            } else {
+                configData['proxy-providers'][`provider${i + 1}`] = {
+                    ...base,
+                    url: urls[i],
+                    path: `./proxies/${generateMD5(urls[i])}.yaml`,
+                    override: {
+                        ...override,
+                        'additional-suffix': ` [${i + 1}]`,
+                    },
+                };
+            }
+        }
+        const randomIndex = Math.floor(Math.random() * hesList.length);
+        const hes = hesList[randomIndex];
+        const data = { providers: configData['proxy-providers'], proxies: proxies }
+        return {
+            status: hes.status,
+            headers: hes.headers,
+            data: data,
+        };
     }
 }
+
+
+
+/**
+ * 将模板中的 proxies、proxy-groups、rules 等字段合并到目标配置对象
+ * @param {Object} target - 目标配置对象（基础配置）
+ * @param {Object} template - 模板配置对象
+ */
+function applyTemplate(target, template) {
+    target.proxies = template.proxies || [];
+    target['proxy-groups'] = template['proxy-groups'] || [];
+    target.rules = template.rules || [];
+    target['sub-rules'] = template['sub-rules'] || {};
+    target['rule-providers'] = template['rule-providers'] || {};
+}
+
 // singbox 配置
 async function singboxconfig(urls, templateUrl, sub) {
     // 模板
@@ -1131,6 +1226,9 @@ export function getFileNameFromUrl(url) {
     } catch {
         return null;
     }
+}
+export function generateMD5(text) {
+    return crypto.createHash('md5').update(text).digest('hex');
 }
 export function configs() {
     const data = {
