@@ -54,7 +54,7 @@ export default {
             );
         }
         if (singbox) {
-            const res = await singboxconfig(urls, templateUrl, sub);
+            const res = await singboxconfig(urls, templateUrl, subapi);
             data = res.data;
             const responseHeaders = res.headers || {};
             headers = new Headers(responseHeaders);
@@ -880,14 +880,12 @@ async function mihomoconfig(urls, templateUrl, configUrl) {
     const selectedHeader = await getRandomProviderHeader(urls, configData.data.p, configData.data.override);
     if (selectedHeader?.data?.proxies) {
         templatedata.proxies = [...templatedata.proxies, ...selectedHeader.data?.proxies]
-        console.log(selectedHeader?.data?.proxies)
         if (!selectedHeader?.data?.providers) {
             configData.data['proxy-providers'] = {}
         }
     }
     if (selectedHeader?.data?.providers) {
         configData.data['proxy-providers'] = selectedHeader.data.providers || {};
-        console.log(selectedHeader?.data?.providers)
     }
     if (templatedata) {
         applyTemplate(configData.data, templatedata);
@@ -932,7 +930,7 @@ async function getRandomProviderHeader(urls, base, override) {
         'proxy-providers': {}
     };
     if (urls.length === 1) {
-        const res = await fetchResponse(urls[0], 'v2ray');
+        const res = await fetchResponse(urls[0], 'clash');
 
         if (res.data.proxies && Array.isArray(res.data.proxies)) {
             return {
@@ -959,7 +957,7 @@ async function getRandomProviderHeader(urls, base, override) {
     } else {
         let hesList = [];
         for (let i = 0; i < urls.length; i++) {
-            const res = await fetchResponse(urls[i], 'v2ray');
+            const res = await fetchResponse(urls[i], 'clash');
             hesList.push({
                 status: res.status,
                 headers: res.headers,
@@ -991,8 +989,6 @@ async function getRandomProviderHeader(urls, base, override) {
         };
     }
 }
-
-
 
 /**
  * 将模板中的 proxies、proxy-groups、rules 等字段合并到目标配置对象
@@ -1060,7 +1056,7 @@ export async function loadAndMergeOutbounds(urls, sub) {
     const outboundsList = [];
     let response;
     if (urls.length === 1) {
-        response = await outboundres(urls[0], sub, false)
+        response = await outboundres(urls[0], 0, sub, false)
         outboundsList.push(...response.out)
     } else {
         for (let i = 0; i < urls.length; i++) {
@@ -1199,7 +1195,7 @@ export async function fetchResponse(url, userAgent = 'Mozilla/5.0 (Windows NT 10
     }
     // 获取响应体的文本内容
     const textData = await response.text();
-    let jsonData = "";
+    let jsonData;
     try {
         jsonData = YAML.parse(textData, { maxAliasCount: -1, merge: true });
     } catch (e) {
