@@ -930,7 +930,7 @@ async function getRandomProviderHeader(urls, base, override) {
         'proxy-providers': {}
     };
     if (urls.length === 1) {
-        const res = await fetchResponse(urls[0], 'clash');
+        const res = await fetchResponse(urls[0], 'mate');
 
         if (res.data.proxies && Array.isArray(res.data.proxies)) {
             return {
@@ -957,7 +957,7 @@ async function getRandomProviderHeader(urls, base, override) {
     } else {
         let hesList = [];
         for (let i = 0; i < urls.length; i++) {
-            const res = await fetchResponse(urls[i], 'clash');
+            const res = await fetchResponse(urls[i], 'meta');
             hesList.push({
                 status: res.status,
                 headers: res.headers,
