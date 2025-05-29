@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 const backimg = 'https://t.alcy.cc/ycy';
-const subapi = 'https://url.v1.mk/sub';
+const subapi = 'https://url.v1.mk';
 const mihomo = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo_lite.yaml';
 const beiantext = base64DecodeUtf8('6JCMSUNQ5aSHMjAyNTAwMDHlj7c=');
 const beiandizi = atob('aHR0cHM6Ly90Lm1lL01hcmlzYV9rcmlzdGk=');
@@ -75,7 +75,6 @@ export default {
 
 // 获取伪装页面
 async function getFakePage(image, button_url, button_text, configdata) {
-    console.log(image)
     return `
 <!DOCTYPE html>
 <html>
@@ -882,11 +881,11 @@ async function mihomoconfig(urls, templateUrl, config) {
     const override = data.override || {};
     const proxyProviders = {};
     if (urls.length === 1) {
-        urlheaders = await fetchResponse(urls[0]);
+        urlheaders = await fetchResponse(urls[0], 'clash');
     } else {
         const index = Math.floor(Math.random() * urls.length);
         const selectedUrl = urls[index];
-        urlheaders = await fetchResponse(selectedUrl);
+        urlheaders = await fetchResponse(selectedUrl, 'clash');
     }
     urls.forEach((url, i) => {
         proxyProviders[`provider${i + 1}`] = {
@@ -919,16 +918,16 @@ async function singboxconfig(urls, templateUrl, sub) {
     const templatedata = await fetchResponse(templateUrl);
     const templatejson = templatedata.data;
     // 节点
-    const outboundsdata = await loadAndMergeOutbounds(urls, sub);
-    const outboundsjson = outboundsdata.data;
+    const response = await loadAndMergeOutbounds(urls, sub);
+    const data = response.data;
     const ApiUrlname = []; // 节点名
-    outboundsjson.forEach((res) => {
+    data.forEach((res) => {
         ApiUrlname.push(res.tag);
     });
     // 策略组处理
     templatejson.outbounds = loadAndSetOutbounds(templatejson.outbounds, ApiUrlname);
     // 节点合并
-    templatejson.outbounds.push(...outboundsjson);
+    templatejson.outbounds.push(...data);
     // 删除锚点
     if (Array.isArray(templatejson.delete)) {
         for (const key of templatejson.delete) {
@@ -937,64 +936,102 @@ async function singboxconfig(urls, templateUrl, sub) {
         delete templatejson.delete;
     }
     return {
-        status: outboundsdata.status,
-        headers: outboundsdata.headers,
+        status: response.status,
+        headers: response.headers,
         data: JSON.stringify(templatejson)
     };
 }
 
 // 订阅链接
-export function buildApiUrl(rawUrl, BASE_API) {
+export function buildApiUrl(rawUrl, BASE_API, target) {
     const params = new URLSearchParams({
-        target: 'singbox',
+        target: target,
         url: rawUrl,
-        insert: 'false',
-        config: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple.ini',
         emoji: 'true',
-        list: 'true',
-        xudp: 'false',
-        udp: 'false',
-        tfo: 'false',
-        expand: 'true',
-        scv: 'false',
-        fdn: 'false'
+        list: 'true'
     });
-    return `${BASE_API}?${params}`;
+    return `${BASE_API}/sub?${params}`;
 }
-// outbounds 组处理
+
+/**
+ * 加载多个配置 URL，对其 outbounds 进行合并处理。
+ * 对第一个配置不添加 tag 后缀，其余的添加 `[序号]`。
+ *
+ * @param {string[]} urls - 配置地址数组
+ * @param {string} sub - 用于构建备用 API 请求的参数
+ * @returns {Promise<Object>} 包含合并后的 outbounds、状态码与响应头
+ */
 export async function loadAndMergeOutbounds(urls, sub) {
     const outboundsList = [];
-    let headers = {};
-
-    for (let i = 0; i < urls.length; i++) {
-        const outboundsUrl = buildApiUrl(urls[i], sub);
-
-        try {
-            const outboundsdata = await fetchResponse(outboundsUrl);
-            const outboundsJson = outboundsdata.data
-            headers = outboundsdata
-
-            if (outboundsJson && Array.isArray(outboundsJson.outbounds)) {
-                const sequence = i + 1;
-                const modifiedOutbounds = outboundsJson.outbounds.map(outbound => ({
-                    ...outbound,
-                    tag: `${outbound.tag} [${sequence}]`
-                }));
-
-                outboundsList.push(...modifiedOutbounds);
-            } else {
-                throw new Error(`第 ${i + 1} 个配置中 outbounds 不存在或不是数组`);
-            }
-        } catch (err) {
-            throw new Error(`加载 ${outboundsUrl} 失败:`, err);
+    let response;
+    if (urls.length === 1) {
+        response = await outboundres(urls[0], sub, false)
+        outboundsList.push(...response.out)
+    } else {
+        for (let i = 0; i < urls.length; i++) {
+            response = await outboundres(urls[i], i, sub, true)
+            outboundsList.push(...response.out)
         }
     }
-
     return {
-        status: headers.status,
-        headers: headers.headers,
+        status: response.response.status,
+        headers: response.response.headers,
         data: outboundsList
     };
+}
+
+/**
+ * 异步获取指定索引的配置数据，提取并处理其中的 outbounds：
+ * 1. 首先尝试直接获取配置中的 outbounds；
+ * 2. 若未找到，则构建 API URL 重新请求；
+ * 3. 使用 outboundArrs 处理 outbounds，支持排除类型并可选添加 tag 序号。
+ *
+ * @param {string} sub - 订阅链接
+ * @param {number} index - 当前配置在 urls 数组中的索引
+ * @param {string} sub - 用于构建备用 API 请求的参数
+ * @param {boolean} [withTagSuffix=false] - 是否在 tag 后添加 [序号] 后缀
+ * @returns {Promise<{ response: Object, out: Array<Object> }>} 包含 response 和处理后的 outbounds
+ */
+export async function outboundres(url, index, sub, withTagSuffix = false) {
+    let response, out;
+    response = await fetchResponse(url, 'singbox');
+    const resdata = response.data;
+    if (resdata.outbounds) {
+        out = outboundArrs(resdata, index, withTagSuffix)
+    } else {
+        const outboundsUrl = buildApiUrl(url, sub, 'singbox');
+        response = await fetchResponse(outboundsUrl, 'singbox');
+        const data = response.data
+        out = outboundArrs(data, index, withTagSuffix)
+    }
+    return { response, out }
+}
+
+/**
+ * 处理配置文件中的 outbounds 数组：
+ * 1. 先排除特定类型（如 direct、dns 等）；
+ * 2. 根据参数决定是否为 tag 添加序号后缀；
+ *
+ * @param {Object} data - 包含 outbounds 数组的配置对象
+ * @param {number} index - 当前配置的索引值（用于生成 tag 序号）
+ * @param {boolean} withTagSuffix - 是否在 tag 后添加 [序号]，默认为 false
+ * @returns {Array<Object>} 处理后的 outbounds 数组
+ * @throws {Error} 如果 outbounds 不存在或不是数组
+ */
+export function outboundArrs(data, index, withTagSuffix = false) {
+    const excludedTypes = ['direct', 'block', 'dns', 'selector', 'urltest'];
+    if (data && Array.isArray(data.outbounds)) {
+        const filteredOutbounds = data.outbounds.filter(outbound =>
+            !excludedTypes.includes(outbound.type)
+        );
+        const sequence = index + 1;
+        return filteredOutbounds.map(outbound => ({
+            ...outbound,
+            tag: withTagSuffix ? `${outbound.tag} [${sequence}]` : outbound.tag
+        }));
+    } else {
+        throw new Error(`第 ${index + 1} 个配置中 outbounds 不存在或不是数组`);
+    }
 }
 // 策略组处理
 export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
@@ -1052,12 +1089,11 @@ export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
 }
 
 // 处理请求
-export async function fetchResponse(url) {
+export async function fetchResponse(url, userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3') {
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'User-Agent': 'v2ray',
-            'Accept': '*/*',
+            'User-Agent': userAgent,
         }
     });
 
