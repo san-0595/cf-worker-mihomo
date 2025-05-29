@@ -59,7 +59,7 @@ npm run build
 | 变量名         | 描述               | 示例值                      |
 |----------------|--------------------|-----------------------------|
 | `IMG`          | 背景图           | `https://t.alcy.cc/ycy` |
-| `SUB`          | 转换后端         | `https://url.v1.mk/sub` |
+| `SUB`          | 转换后端         | `https://url.v1.mk` |
 | `MIHOMO`       | mihomo头部配置   | `https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo_lite.yaml` |
 | `BEIAN`        | 底部备案信息     | `萌ICP备20250001号`    |
 | `BEIANURL`     | 转跳地址         | `https://t.me/Marisa_kristi`  |
