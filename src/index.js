@@ -1087,7 +1087,7 @@ export async function outboundres(url, index, sub, withTagSuffix = false) {
     let response, out;
     response = await fetchResponse(url, 'singbox');
     const resdata = response.data;
-    if (resdata.outbounds) {
+    if (Array.isArray(resdata.outbounds) && resdata.outbounds.length > 0) {
         out = outboundArrs(resdata, index, withTagSuffix)
     } else {
         const outboundsUrl = buildApiUrl(url, sub, 'singbox');
