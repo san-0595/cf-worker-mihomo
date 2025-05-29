@@ -1038,8 +1038,17 @@ export function buildApiUrl(rawUrl, BASE_API, target) {
     const params = new URLSearchParams({
         target: target,
         url: rawUrl,
+        insert: 'false',
+        config: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini',
         emoji: 'true',
-        list: 'true'
+        list: 'true',
+        xudp: 'false',
+        udp: 'false',
+        tfo: 'false',
+        expand: 'true',
+        scv: 'false',
+        fdn: 'false',
+        new_name: 'true'
     });
     return `${BASE_API}/sub?${params}`;
 }
