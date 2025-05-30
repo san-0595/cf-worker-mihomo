@@ -1140,9 +1140,9 @@ export function outboundArrs({ data, index = 0, withTagSuffix }) {
     if (data && Array.isArray(data.outbounds)) {
         const filteredOutbounds = data.outbounds.filter(outbound => {
             if (excludedTypes.includes(outbound.type)) return false;
-            if (typeof outbound?.server !== 'string' || outbound?.server.trim() === '') return false;
-            if (typeof outbound?.server_port !== 'number' || outbound?.server_port < 1) return false;
-            if (typeof outbound?.password !== 'string' || outbound?.password.trim() === '') return false;
+            if ('server' in outbound && (!outbound.server || outbound.server.trim() === '')) return false;
+            if ('server_port' in outbound && (typeof outbound.server_port !== 'number' || outbound.server_port < 1)) return false;
+            if ('password' in outbound && (typeof outbound.password !== 'string' || outbound.password.trim() === '')) return false;
             return true;
         });
         const sequence = index + 1;
