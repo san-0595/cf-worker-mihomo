@@ -54,13 +54,13 @@ export default {
             );
         }
         if (singbox) {
-            const res = await singboxconfig(urls, templateUrl, subapi);
+            const res = await singboxconfig({ urls: urls, templateUrl: templateUrl, subapi: subapi });
             data = res.data;
             const responseHeaders = res.headers || {};
             headers = new Headers(responseHeaders);
             status = res.status
         } else {
-            const res = await mihomoconfig(urls, templateUrl, Mihomo_default);
+            const res = await mihomoconfig({ urls: urls, templateUrl: templateUrl, configUrl: Mihomo_default });
             data = res.data;
             const responseHeaders = res.headers || {};
             headers = new Headers(responseHeaders);
@@ -874,10 +874,10 @@ function isValidURL(url) {
  * @param {string} configUrl - 基础配置地址（可选）
  * @returns {Promise<{status:number, headers:Object, data:string}>} - 返回状态、响应头和配置 JSON 字符串
  */
-async function mihomoconfig(urls, templateUrl, configUrl) {
-    const templatedata = await getTemplateData(templateUrl);
-    const configData = await getConfigData(configUrl);
-    const selectedHeader = await getRandomProviderHeader(urls, configData.data.p, configData.data.override);
+async function mihomoconfig({ urls, templateUrl, configUrl }) {
+    const templatedata = await getTemplateData({ templateUrl: templateUrl });
+    const configData = await getConfigData({ configUrl: configUrl });
+    const selectedHeader = await getRandomProviderHeader({ urls: urls, base: configData.data.p, override: configData.data.override });
     if (selectedHeader?.data?.proxies) {
         templatedata.proxies = [...templatedata.proxies, ...selectedHeader.data?.proxies]
         if (!selectedHeader?.data?.providers) {
@@ -888,7 +888,7 @@ async function mihomoconfig(urls, templateUrl, configUrl) {
         configData.data['proxy-providers'] = selectedHeader.data.providers || {};
     }
     if (templatedata) {
-        applyTemplate(configData.data, templatedata);
+        applyTemplate({ target: configData.data, template: templatedata });
     }
 
     return {
@@ -902,9 +902,9 @@ async function mihomoconfig(urls, templateUrl, configUrl) {
  * @param {string} templateUrl - 模板文件地址
  * @returns {Promise<Object|null>} - 返回模板数据对象，或没有模板时返回 null
  */
-async function getTemplateData(templateUrl) {
+async function getTemplateData({ templateUrl }) {
     if (!templateUrl) return null;
-    const response = await fetchResponse(templateUrl);
+    const response = await fetchResponse({ url: templateUrl });
     return response.data;
 }
 /**
@@ -912,11 +912,11 @@ async function getTemplateData(templateUrl) {
  * @param {string} configUrl - 配置文件地址
  * @returns {Promise<Object>} - 返回配置数据对象
  */
-async function getConfigData(configUrl) {
+async function getConfigData({ configUrl }) {
     if (!configUrl) {
-        configUrl = 'https://raw.githubusercontent.com/Kwisma/cf-worker-mihomo/main/Config/Mihomo.yaml';
+        throw new Error(`缺少模板`);
     }
-    return await fetchResponse(configUrl);
+    return await fetchResponse({ url: configUrl });
 }
 /**
  * 随机从多个订阅 URL 中获取其响应头中的 subscription-userinfo 信息
@@ -924,13 +924,13 @@ async function getConfigData(configUrl) {
  * @param {string[]} urls - 订阅地址列表
  * @returns {Promise<{status: number, headers: Object, data: any}>} - 包含状态码、响应头和 subscription-userinfo 字符串
  */
-async function getRandomProviderHeader(urls, base, override) {
+async function getRandomProviderHeader({ urls, base = [], override = [] }) {
     const proxies = [];
     const configData = {
         'proxy-providers': {}
     };
     if (urls.length === 1) {
-        const res = await fetchResponse(urls[0], 'mate');
+        const res = await fetchResponse({ url: urls[0], userAgent: 'ClashMeta' });
 
         if (res.data.proxies && Array.isArray(res.data.proxies)) {
             return {
@@ -942,7 +942,7 @@ async function getRandomProviderHeader(urls, base, override) {
             configData['proxy-providers']['provider'] = {
                 ...base,
                 url: urls[0],
-                path: `./proxies/${generateMD5(urls[0])}.yaml`,
+                path: `./proxies/${generateMD5({ text: urls[0] })}.yaml`,
                 override: {
                     ...override,
                     'additional-suffix': '',
@@ -957,7 +957,7 @@ async function getRandomProviderHeader(urls, base, override) {
     } else {
         let hesList = [];
         for (let i = 0; i < urls.length; i++) {
-            const res = await fetchResponse(urls[i], 'meta');
+            const res = await fetchResponse({ url: urls[i], userAgent: 'ClashMeta' });
             hesList.push({
                 status: res.status,
                 headers: res.headers,
@@ -971,7 +971,7 @@ async function getRandomProviderHeader(urls, base, override) {
                 configData['proxy-providers'][`provider${i + 1}`] = {
                     ...base,
                     url: urls[i],
-                    path: `./proxies/${generateMD5(urls[i])}.yaml`,
+                    path: `./proxies/${generateMD5({ text: urls[i] })}.yaml`,
                     override: {
                         ...override,
                         'additional-suffix': ` [${i + 1}]`,
@@ -995,7 +995,7 @@ async function getRandomProviderHeader(urls, base, override) {
  * @param {Object} target - 目标配置对象（基础配置）
  * @param {Object} template - 模板配置对象
  */
-function applyTemplate(target, template) {
+function applyTemplate({ target, template }) {
     target.proxies = template.proxies || [];
     target['proxy-groups'] = template['proxy-groups'] || [];
     target.rules = template.rules || [];
@@ -1004,19 +1004,19 @@ function applyTemplate(target, template) {
 }
 
 // singbox 配置
-async function singboxconfig(urls, templateUrl, sub) {
+async function singboxconfig({ urls, templateUrl, subapi }) {
     // 模板
-    const templatedata = await fetchResponse(templateUrl);
+    const templatedata = await fetchResponse({ url: templateUrl });
     const templatejson = templatedata.data;
     // 节点
-    const response = await loadAndMergeOutbounds(urls, sub);
+    const response = await loadAndMergeOutbounds({ urls: urls, subapi: subapi, userAgent: 'singbox' });
     const data = response.data;
     const ApiUrlname = []; // 节点名
     data.forEach((res) => {
         ApiUrlname.push(res.tag);
     });
     // 策略组处理
-    templatejson.outbounds = loadAndSetOutbounds(templatejson.outbounds, ApiUrlname);
+    templatejson.outbounds = loadAndSetOutbounds({ Outbounds: templatejson.outbounds, ApiUrlname: ApiUrlname });
     // 节点合并
     templatejson.outbounds.push(...data);
     // 删除锚点
@@ -1034,7 +1034,8 @@ async function singboxconfig(urls, templateUrl, sub) {
 }
 
 // 订阅链接
-export function buildApiUrl(rawUrl, BASE_API, target) {
+export function buildApiUrl({ rawUrl, BASE_API, userAgent }) {
+    const target = /clashmate|clash|meta/i.test(userAgent) ? 'clash' : 'singbox';
     const params = new URLSearchParams({
         target: target,
         url: rawUrl,
@@ -1061,15 +1062,15 @@ export function buildApiUrl(rawUrl, BASE_API, target) {
  * @param {string} sub - 用于构建备用 API 请求的参数
  * @returns {Promise<Object>} 包含合并后的 outbounds、状态码与响应头
  */
-export async function loadAndMergeOutbounds(urls, sub) {
+export async function loadAndMergeOutbounds({ urls, subapi, userAgent }) {
     const outboundsList = [];
     let response;
     if (urls.length === 1) {
-        response = await outboundres(urls[0], 0, sub, false)
+        response = await outboundres({ url: urls[0], subapi: subapi, withTagSuffix: false, userAgent: userAgent })
         outboundsList.push(...response.out)
     } else {
         for (let i = 0; i < urls.length; i++) {
-            response = await outboundres(urls[i], i, sub, true)
+            response = await outboundres({ url: urls[i], index: i, subapi: subapi, withTagSuffix: true, userAgent: userAgent })
             outboundsList.push(...response.out)
         }
     }
@@ -1089,20 +1090,20 @@ export async function loadAndMergeOutbounds(urls, sub) {
  * @param {string} sub - 订阅链接
  * @param {number} index - 当前配置在 urls 数组中的索引
  * @param {string} sub - 用于构建备用 API 请求的参数
- * @param {boolean} [withTagSuffix=false] - 是否在 tag 后添加 [序号] 后缀
+ * @param {boolean} withTagSuffix - 是否在 tag 后添加 [序号] 后缀
  * @returns {Promise<{ response: Object, out: Array<Object> }>} 包含 response 和处理后的 outbounds
  */
-export async function outboundres(url, index, sub, withTagSuffix = false) {
+export async function outboundres({ url, index, subapi, withTagSuffix, userAgent }) {
     let response, out;
-    response = await fetchResponse(url, 'singbox');
+    response = await fetchResponse({ url: url, userAgent: userAgent });
     const resdata = response.data;
-    if (Array.isArray(resdata.outbounds) && resdata.outbounds.length > 0) {
-        out = outboundArrs(resdata, index, withTagSuffix)
+    if (resdata.outbounds && Array.isArray(resdata.outbounds) && resdata.outbounds.length > 0) {
+        out = outboundArrs({ data: resdata, index: index, withTagSuffix: withTagSuffix })
     } else {
-        const outboundsUrl = buildApiUrl(url, sub, 'singbox');
-        response = await fetchResponse(outboundsUrl, 'singbox');
+        const outboundsUrl = buildApiUrl({ rawUrl: url, BASE_API: subapi, userAgent: userAgent });
+        response = await fetchResponse({ url: outboundsUrl });
         const data = response.data
-        out = outboundArrs(data, index, withTagSuffix)
+        out = outboundArrs({ data: data, index: index, withTagSuffix: withTagSuffix })
     }
     return { response, out }
 }
@@ -1118,7 +1119,7 @@ export async function outboundres(url, index, sub, withTagSuffix = false) {
  * @returns {Array<Object>} 处理后的 outbounds 数组
  * @throws {Error} 如果 outbounds 不存在或不是数组
  */
-export function outboundArrs(data, index, withTagSuffix = false) {
+export function outboundArrs({ data, index = 0, withTagSuffix }) {
     const excludedTypes = ['direct', 'block', 'dns', 'selector', 'urltest'];
     if (data && Array.isArray(data.outbounds)) {
         const filteredOutbounds = data.outbounds.filter(outbound =>
@@ -1134,7 +1135,7 @@ export function outboundArrs(data, index, withTagSuffix = false) {
     }
 }
 // 策略组处理
-export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
+export function loadAndSetOutbounds({ Outbounds, ApiUrlname }) {
     Outbounds.forEach(res => {
         // 从完整 outbound 名称开始匹配
         let matchedOutbounds = [...ApiUrlname];
@@ -1187,16 +1188,14 @@ export function loadAndSetOutbounds(Outbounds, ApiUrlname) {
     });
     return filteredOutbounds
 }
-
 // 处理请求
-export async function fetchResponse(url, userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3') {
+export async function fetchResponse({ url, userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' }) {
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'User-Agent': userAgent,
+            'User-Agent': userAgent
         }
     });
-
     const headersObj = {};
     // 遍历响应头，将其转为普通的 JavaScript 对象格式
     for (const [key, value] of response.headers.entries()) {
@@ -1204,6 +1203,7 @@ export async function fetchResponse(url, userAgent = 'Mozilla/5.0 (Windows NT 10
     }
     // 获取响应体的文本内容
     const textData = await response.text();
+
     let jsonData;
     try {
         jsonData = YAML.parse(textData, { maxAliasCount: -1, merge: true });
@@ -1221,18 +1221,8 @@ export async function fetchResponse(url, userAgent = 'Mozilla/5.0 (Windows NT 10
         data: jsonData
     };
 }
-// 获取文件名
-export function getFileNameFromUrl(url) {
-    try {
-        const pathname = new URL(url).pathname;
-        const parts = pathname.split('/').filter(Boolean);
-        const lastPart = parts.length > 0 ? parts[parts.length - 1] : '';
-        return lastPart || null;
-    } catch {
-        return null;
-    }
-}
-export function generateMD5(text) {
+
+export function generateMD5({ text }) {
     return crypto.createHash('md5').update(text).digest('hex');
 }
 export function configs() {
