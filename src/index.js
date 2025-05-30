@@ -1141,7 +1141,7 @@ export function outboundArrs({ data, index = 0, withTagSuffix }) {
         const filteredOutbounds = data.outbounds.filter(outbound => {
             if (excludedTypes.includes(outbound.type)) return false;
             if (typeof outbound?.server !== 'string' || outbound?.server.trim() === '') return false;
-            if (typeof outbound?.server_port !== 'number') return false;
+            if (typeof outbound?.server_port !== 'number' || outbound?.server_port < 1) return false;
             if (typeof outbound?.password !== 'string' || outbound?.password.trim() === '') return false;
             return true;
         });
