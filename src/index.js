@@ -1117,7 +1117,7 @@ export async function outboundres({ url, index, subapi, withTagSuffix, userAgent
         out = outboundArrs({ data: resdata, index: index, withTagSuffix: withTagSuffix })
     } else {
         const outboundsUrl = buildApiUrl({ rawUrl: url, BASE_API: subapi, userAgent: userAgent });
-        response = await fetchResponse({ url: outboundsUrl });
+        response = await fetchResponse({ url: outboundsUrl, userAgent: userAgent });
         const data = response.data
         out = outboundArrs({ data: data, index: index, withTagSuffix: withTagSuffix })
     }
