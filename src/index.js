@@ -879,7 +879,9 @@ async function mihomoconfig({ urls, templateUrl, configUrl }) {
     const configData = await getConfigData({ configUrl: configUrl });
     const selectedHeader = await getRandomProviderHeader({ urls: urls, base: configData.data.p, override: configData.data.override });
     if (selectedHeader?.data?.proxies) {
-        templatedata.proxies = [...templatedata.proxies, ...selectedHeader.data?.proxies]
+        if (templatedata?.proxies) {
+            templatedata.proxies = [...templatedata.proxies, ...selectedHeader.data?.proxies]
+        }
         if (!selectedHeader?.data?.providers) {
             configData.data['proxy-providers'] = {}
         }
