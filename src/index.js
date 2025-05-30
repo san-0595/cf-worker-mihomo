@@ -516,8 +516,7 @@ async function getFakePage(image, button_url, button_text, configdata) {
                 <label for="link">订阅链接</label>
                 <div id="link-container">
                     <div class="link-row">
-                        <input type="text" class="link-input"
-                            placeholder="https://www.example.com/answer/land?token=xxx" />
+                        <input type="text" class="link-input"/>
                         <div class="add-btn" onclick="addLinkInput(this)">➕</div>
                     </div>
                 </div>
@@ -537,8 +536,7 @@ async function getFakePage(image, button_url, button_text, configdata) {
                 <label for="link">订阅链接</label>
                 <div id="link-container-singbox">
                     <div class="link-row">
-                        <input type="text" class="link-input"
-                            placeholder="https://www.example.com/answer/land?token=xxx" />
+                        <input type="text" class="link-input"/>
                         <div class="add-btn" onclick="addLinkInput(this, 'singbox')">➕</div>
                     </div>
                 </div>
@@ -602,6 +600,23 @@ async function getFakePage(image, button_url, button_text, configdata) {
             });
         }
 
+        // 动态设置输入框的placeholder，根据当前模式
+        function setPlaceholderForMode(input, mode = 'mihomo') {
+            input.placeholder = mode === 'singbox' 
+                ? '请输入singbox订阅地址url，支持格式：base64' 
+                : '请输入clash订阅地址url，支持格式：base64';
+        }
+
+        // 初始化所有输入框的placeholder
+        function initializePlaceholders(mode) {
+            const selector = mode === 'singbox' 
+                ? '.singbox-options .link-input' 
+                : '.mihomo-options .link-input';
+    
+            document.querySelectorAll(selector).forEach(input => {
+                setPlaceholderForMode(input, mode);
+            });
+        }
         // 修改addLinkInput以支持singbox容器
         function addLinkInput(button, mode = 'mihomo') {
             const containerId = mode === 'singbox' ? 'link-container-singbox' : 'link-container';
@@ -612,7 +627,7 @@ async function getFakePage(image, button_url, button_text, configdata) {
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'link-input';
-            input.placeholder = 'https://www.example.com/answer/land?token=xxx';
+            setPlaceholderForMode(input, mode);
 
             button.style.display = 'none';
             row.appendChild(input);
@@ -666,6 +681,10 @@ async function getFakePage(image, button_url, button_text, configdata) {
             const toggleOptions = document.querySelectorAll('.toggle-option');
             const container = document.querySelector('.container');
 
+            // 设置默认模式为mihomo
+            const defaultMode = 'mihomo';
+            document.querySelector(\`.toggle-option[data-mode="\${defaultMode}"]\`).classList.add('active');
+            initializePlaceholders(defaultMode);
             toggleOptions.forEach(option => {
                 option.addEventListener('click', function () {
                     // 设置活动状态
@@ -673,11 +692,14 @@ async function getFakePage(image, button_url, button_text, configdata) {
                     this.classList.add('active');
 
                     // 切换模式
+                    const newMode = this.dataset.mode;
                     if (this.dataset.mode === 'singbox') {
                         container.classList.add('singbox-mode');
                     } else {
                         container.classList.remove('singbox-mode');
                     }
+                   // 初始化新模式的placeholder
+                   initializePlaceholders(newMode);
                 });
             });
 
@@ -879,13 +901,10 @@ async function mihomoconfig({ urls, templateUrl, configUrl }) {
     const configData = await getConfigData({ configUrl: configUrl });
     const selectedHeader = await getRandomProviderHeader({ urls: urls, base: configData.data.p, override: configData.data.override });
     if (selectedHeader?.data?.proxies) {
-        if (!templatedata.proxies) {
-            templatedata.proxies = [];
-        }
-        templatedata.proxies = [...templatedata.proxies, ...selectedHeader.data?.proxies]
+        templatedata.proxies = [...(templatedata.proxies || []), ...selectedHeader.data?.proxies]
     }
     if (selectedHeader?.data?.providers) {
-        configData.data['proxy-providers'] = selectedHeader.data.providers || {};
+        configData.data['proxy-providers'] = selectedHeader.data.providers;
     } else {
         configData.data['proxy-providers'] = {}
     }
