@@ -548,7 +548,7 @@ async function getFakePage(image, button_url, button_text, configdata) {
 
         <div class="input-group">
             <div style="display: flex; align-items: center;">
-                <label for="result">订阅链接</label>
+                <label for="result">订阅地址</label>
             </div>
             <input type="text" id="result" readonly onclick="copyToClipboard()">
             <label id="qrcode" style="margin: 15px 10px -15px 10px;"></label>
