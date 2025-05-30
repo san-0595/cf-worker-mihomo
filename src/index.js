@@ -870,7 +870,7 @@ function base64DecodeUtf8(base64) {
 function isValidURL(url) {
     try {
         const parsedUrl = new URL(url);
-        return ['https:'].includes(parsedUrl.protocol);
+        return ['http:', 'https:'].includes(parsedUrl.protocol);
     } catch (e) {
         return false;
     }
