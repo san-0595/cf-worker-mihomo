@@ -559,17 +559,6 @@ async function getFakePage(image, button_url, button_text, configdata) {
     </div>
 
     <script>
-
-        // 点击页面其他区域关闭提示框
-        document.addEventListener('click', function (event) {
-            const tooltip = document.getElementById('infoTooltip');
-            const infoIcon = document.querySelector('.info-icon');
-
-            if (!tooltip.contains(event.target) && !infoIcon.contains(event.target)) {
-                tooltip.style.display = 'none';
-            }
-        });
-
         function copyToClipboard() {
             const resultInput = document.getElementById('result');
             if (!resultInput.value) {
@@ -789,8 +778,8 @@ async function getFakePage(image, button_url, button_text, configdata) {
 
             const templateLink = selectedOption ? selectedOption.dataset.value : '';
 
-            if (subscriptionLinks.length === 0 && !templateLink) {
-                alert('请输入至少一个订阅链接或选择配置模板');
+            if (subscriptionLinks.length === 0 && templateLink) {
+                alert('请输入至少一个订阅链接');
                 return;
             }
 
@@ -825,8 +814,8 @@ async function getFakePage(image, button_url, button_text, configdata) {
 
             const templateLink = selectedOption ? selectedOption.dataset.value : '';
 
-            if (subscriptionLinks.length === 0 && !templateLink) {
-                alert('请输入至少一个订阅链接或选择配置模板');
+            if (subscriptionLinks.length === 0 && templateLink) {
+                alert('请输入至少一个订阅链接');
                 return;
             }
 
