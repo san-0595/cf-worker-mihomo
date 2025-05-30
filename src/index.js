@@ -53,24 +53,30 @@ export default {
                 }
             );
         }
-        if (singbox) {
-            const res = await singboxconfig({ urls: urls, templateUrl: templateUrl, subapi: subapi });
+        try {
+            let res, data, headers, status;
+            if (singbox) {
+                res = await singboxconfig({ urls, templateUrl, subapi });
+            } else {
+                res = await mihomoconfig({ urls, templateUrl, configUrl: Mihomo_default });
+            }
             data = res.data;
             const responseHeaders = res.headers || {};
             headers = new Headers(responseHeaders);
-            status = res.status
-        } else {
-            const res = await mihomoconfig({ urls: urls, templateUrl: templateUrl, configUrl: Mihomo_default });
-            data = res.data;
-            const responseHeaders = res.headers || {};
-            headers = new Headers(responseHeaders);
-            status = res.status
+            status = res.status;
+            headers.set("Content-Type", "application/json; charset=utf-8");
+            return new Response(data, {
+                status,
+                headers
+            });
+        } catch (err) {
+            return new Response(err.message, {
+                status: 500,
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8"
+                }
+            });
         }
-        headers.set("Content-Type", "application/json; charset=utf-8");
-        return new Response(data, {
-            status: status,
-            headers
-        });
     }
 };
 
@@ -1021,7 +1027,7 @@ async function singboxconfig({ urls, templateUrl, subapi }) {
     const response = await loadAndMergeOutbounds({ urls: urls, subapi: subapi, userAgent: 'singbox' });
     const data = response.data;
     const ApiUrlname = []; // 节点名
-    if (!data || data.length === 0) throw new Error(`节点为空，请使用有效订阅`);
+    if (!data?.length) throw new Error(`节点为空，请使用有效订阅`);
     data.forEach((res) => {
         ApiUrlname.push(res.tag);
     });
@@ -1132,16 +1138,19 @@ export async function outboundres({ url, index, subapi, withTagSuffix, userAgent
 export function outboundArrs({ data, index = 0, withTagSuffix }) {
     const excludedTypes = ['direct', 'block', 'dns', 'selector', 'urltest'];
     if (data && Array.isArray(data.outbounds)) {
-        const filteredOutbounds = data.outbounds.filter(outbound =>
-            !excludedTypes.includes(outbound.type)
-        );
+        const filteredOutbounds = data.outbounds.filter(outbound => {
+            if (excludedTypes.includes(outbound.type)) return false;
+            if (typeof outbound.server !== 'string' || outbound.server.trim() === '') return false;
+            if (typeof outbound.server_port !== 'number') return false;
+            return true;
+        });
         const sequence = index + 1;
         return filteredOutbounds.map(outbound => ({
             ...outbound,
             tag: withTagSuffix ? `${outbound.tag} [${sequence}]` : outbound.tag
         }));
     } else {
-        throw new Error(`第 ${index + 1} 个配置中 outbounds 不存在或不是数组`);
+        throw new Error(`第 ${index + 1} 个订阅找不到节点或无效订阅`);
     }
 }
 // 策略组处理
