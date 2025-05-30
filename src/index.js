@@ -819,8 +819,7 @@ async function getFakePage(image, button_url, button_text, configdata) {
                 return;
             }
 
-             const allValid = subscriptionLinks.every(link =>
-                link.startsWith('http://') || link.startsWith('https://'));
+            const allValid = subscriptionLinks.every(link => link.startsWith('https://'));
 
             if (subscriptionLinks.length > 0 && !allValid) {
                 alert('请输入有效的订阅URL地址');
@@ -871,7 +870,7 @@ function base64DecodeUtf8(base64) {
 function isValidURL(url) {
     try {
         const parsedUrl = new URL(url);
-        return ['http:', 'https:'].includes(parsedUrl.protocol);
+        return ['https:'].includes(parsedUrl.protocol);
     } catch (e) {
         return false;
     }
@@ -1022,6 +1021,7 @@ async function singboxconfig({ urls, templateUrl, subapi }) {
     const response = await loadAndMergeOutbounds({ urls: urls, subapi: subapi, userAgent: 'singbox' });
     const data = response.data;
     const ApiUrlname = []; // 节点名
+    if (!data || data.length === 0) throw new Error(`节点为空，请使用有效订阅`);
     data.forEach((res) => {
         ApiUrlname.push(res.tag);
     });
