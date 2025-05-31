@@ -58,8 +58,9 @@ route:
   auto_detect_interface: true
   final: 🚀 节点选择
   rules:
-    - { inbound: tun-in, action: sniff }
+    - { action: sniff }
     - { protocol: dns, action: hijack-dns }
+    - { action : resolve }
     - { ip_is_private: true, outbound: 🎯 全球直连 }
     - { clash_mode: direct, outbound: 🎯 全球直连 }
     - { clash_mode: global, outbound: 🚀 节点选择 }
@@ -279,7 +280,8 @@ route:
     - { tag: Talkatone, type: remote, format: binary, url: https://cdn.jsdmirror.com/gh/Coldvvater/Mononoke@master/sing-box/Rules/Talkatone.srs, download_detour: 🎯 全球直连 }
     - { tag: Tracker, type: remote, format: binary, url: https://cdn.jsdmirror.com/gh/Kwisma/cf-worker-mihomo@main/rules/singbox/Tracker/Tracker.srs, download_detour: 🎯 全球直连 }
 inbounds:
-  - { tag: tun-in, type: tun, address: [ 172.19.0.1/30, fdfe:dcba:9876::1/126 ], mtu: 9000, stack: system, auto_route: true }
+  - { tag: tun-in, type: tun, interface_name: utun0, address: [ 172.18.0.1/30, fdfe:dcba:9876::1/126 ], mtu: 9000, auto_route: true, strict_route: true, endpoint_independent_nat: false, stack: gvisor, platform: { http_proxy: { enabled: true, server: 127.0.0.1, server_port: 20120 } } }
+  - { tag: mixed-in, type: mixed, listen: 0.0.0.0, listen_port: 20120 }
 outbounds:
   - { type: direct, tag: 🎯 全局直连 }
   - { type: block, tag: 🚫 拒绝连接 }
