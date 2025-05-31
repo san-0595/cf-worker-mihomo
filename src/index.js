@@ -638,39 +638,6 @@ async function getFakePage(image, button_url, button_text, configdata) {
             row.appendChild(btn);
         }
 
-        function generateLink() {
-            const inputs = document.querySelectorAll('.link-input');
-            const links = Array.from(inputs).map(input => input.value.trim()).filter(val => val !== '');
-
-            if (links.length === 0) {
-                alert('请输入至少一个链接');
-                return;
-            }
-
-            const allValid = links.every(link => link.startsWith('http://') || link.startsWith('https://'));
-            if (!allValid) {
-                alert('请输入有效的url地址');
-                return;
-            }
-	        const encodedLinks = links.map(link => encodeURIComponent(link));
-            const domain = window.location.hostname;
-            const urlLink = \`https://\${domain}/?url=\${encodedLinks.join(',')}\`;
-            document.getElementById('result').value = urlLink;
-
-            // 生成二维码
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-            new QRCode(qrcodeDiv, {
-                text: urlLink,
-                width: 220,
-                height: 220,
-                colorDark: "#4a60ea",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.L,
-                scale: 1
-            });
-        }
-
         // 在mihomo和singbox模式之间切换
         document.addEventListener('DOMContentLoaded', function () {
             const toggleOptions = document.querySelectorAll('.toggle-option');
@@ -806,8 +773,8 @@ async function getFakePage(image, button_url, button_text, configdata) {
                 allLinks.push(\`url=\${encodeURIComponent(link)}\`);
             });
 
-            const domain = window.location.hostname;
-            const urlLink = \`https://\${domain}/?\${allLinks.join('&')}\`;
+            const origin = window.location.origin;
+            const urlLink = \`\${origin}/?\${allLinks.join('&')}\`;
             updateResult(urlLink);
         }
         // 生成singbox链接
@@ -841,8 +808,8 @@ async function getFakePage(image, button_url, button_text, configdata) {
                 allLinks.push(\`url=\${encodeURIComponent(link)}\`);
             });
 
-            const domain = window.location.hostname;
-            const urlLink = \`https://\${domain}/?\${allLinks.join('&')}&singbox=true\`;
+            const origin = window.location.origin;
+            const urlLink = \`\${origin}/?\${allLinks.join('&')}&singbox=true\`;
             updateResult(urlLink);
         }
         // 更新结果和二维码
