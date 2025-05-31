@@ -1140,9 +1140,9 @@ export function outboundArrs({ data, index = 0, withTagSuffix }) {
     if (data && Array.isArray(data.outbounds)) {
         const filteredOutbounds = data.outbounds.filter(outbound => {
             if (excludedTypes.includes(outbound.type)) return false;
-            if ('server' in outbound && outbound.server.trim() === '') return false;
-            if ('server_port' in outbound && outbound.server_port < 1) return false;
-            if ('password' in outbound && outbound.password.trim() === '') return false;
+            if (outbound?.server === '') return false;
+            if (outbound?.server_port < 1) return false;
+            if (outbound?.password === '') return false;
             return true;
         });
         const sequence = index + 1;
