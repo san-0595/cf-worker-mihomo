@@ -29,7 +29,7 @@ dns:
     - { clash_mode: direct, server: Direct-dns }
     - { clash_mode: global, server: Proxy-dns }
     - { domain: [ cdn.jsdmirror.com ], server: Direct-dns }
-    - { rule_set: [ cn, private, fakeip_filter ], server: Direct-dns }
+    - { rule_set: [ cn, private ], server: Direct-dns }
     - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
   final: Proxy-dns
   client_subnet: 223.5.5.5
@@ -63,7 +63,7 @@ route:
     - { rule_set: [ telegram_ip ], outbound: telegram }
     - { rule_set: [ tiktok ], outbound: tiktok }
     - { rule_set: [ youtube ], outbound: youtube }
-    - { rule_set: [ private, private_ip, cn_ip, fakeip_filter ], outbound: 🎯 全球直连 }
+    - { rule_set: [ private, private_ip, cn_ip ], outbound: 🎯 全球直连 }
   rule_set:
     # DustinWin 规则集
     - { tag: apple_cn, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs, format: binary, download_detour: 🎯 全球直连 }
@@ -73,7 +73,6 @@ route:
     - { tag: cn, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs, format: binary, download_detour: 🎯 全球直连 }
     - { tag: cn_ip, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs, format: binary, download_detour: 🎯 全球直连 }
     - { tag: disney, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/disney.srs, format: binary, download_detour: 🎯 全球直连 }
-    - { tag: fakeip_filter, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/fakeip-filter.srs, format: binary, download_detour: 🎯 全球直连 }
     - { tag: games, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs, format: binary, download_detour: 🎯 全球直连 }
     - { tag: games_cn, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs, format: binary, download_detour: 🎯 全球直连 }
     - { tag: games_ip, type: remote, url: https://cdn.jsdmirror.com/gh/DustinWin/ruleset_geodata@sing-box-ruleset/gamesip.srs, format: binary, download_detour: 🎯 全球直连 }
@@ -99,32 +98,32 @@ inbounds:
 outbounds:
   - { tag: 🎯 全局直连, type: direct }
   - { tag: 🚫 拒绝连接, type: block }
-  - { tag: 🚀 节点选择, type: selector, outbounds: [ 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 🟢 手动选择, type: selector, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
-  - { tag: 🎯 全球直连, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择 ] }
-  - { tag: 🪧 广告拦截, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
-  - { tag: 💧 泄漏拦截, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
-  - { tag: 🔎 HttpDNS, type: selector, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
-  - { tag: 🎈 自动选择, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
-  - { tag: apple, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: appletv, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: bilibili, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: disney, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 国际游戏, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 国内游戏, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 国际媒体, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 微软服务, type: selector, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: netflix, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: speedtest, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: openai, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 亚马逊TV, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: spotify, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: telegram, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: tiktok, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: youtube, type: selector, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
-  - { tag: 🇭🇰 香港自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
-  - { tag: 🇹🇼 台湾自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
-  - { tag: 🇯🇵 日本自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇯🇵|\bJP\b|日本|Japan" ] } ] }
-  - { tag: 🇺🇸 美国自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
-  - { tag: 🇸🇬 新加坡自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
-  - { tag: 🇩🇪 德国自动, type: urltest, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
+  - { tag: 🚀 节点选择, type: selector, interrupt_exist_connections: true, outbounds: [ 🎈 自动选择, 🟢 手动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 🟢 手动选择, type: selector, interrupt_exist_connections: true, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
+  - { tag: 🎯 全球直连, type: selector, interrupt_exist_connections: true, outbounds: [ 🎯 全局直连, 🚀 节点选择 ] }
+  - { tag: 🪧 广告拦截, type: selector, interrupt_exist_connections: true, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
+  - { tag: 💧 泄漏拦截, type: selector, interrupt_exist_connections: true, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
+  - { tag: 🔎 HttpDNS, type: selector, interrupt_exist_connections: true, outbounds: [ 🚫 拒绝连接, 🎯 全局直连, 🚀 节点选择 ] }
+  - { tag: 🎈 自动选择, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: all, keywords: [ "" ] } ] }
+  - { tag: apple, type: selector, interrupt_exist_connections: true, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: appletv, type: selector, interrupt_exist_connections: true, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: bilibili, type: selector, interrupt_exist_connections: true, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: disney, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 国际游戏, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 国内游戏, type: selector, interrupt_exist_connections: true, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 国际媒体, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 微软服务, type: selector, interrupt_exist_connections: true, outbounds: [ 🎯 全局直连, 🚀 节点选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: netflix, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: speedtest, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: openai, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 亚马逊TV, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: spotify, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: telegram, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: tiktok, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: youtube, type: selector, interrupt_exist_connections: true, outbounds: [ 🚀 节点选择, 🎯 全局直连, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇸🇬 新加坡自动, 🇩🇪 德国自动 ] }
+  - { tag: 🇭🇰 香港自动, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇭🇰|\bHK\b|香港|Hong Kong" ] } ] }
+  - { tag: 🇹🇼 台湾自动, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇹🇼|\bTW\b|台湾|Taiwan|Tai wan" ] } ] }
+  - { tag: 🇯🇵 日本自动, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇯🇵|\bJP\b|日本|Japan" ] } ] }
+  - { tag: 🇺🇸 美国自动, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇺🇸|\bUS\b|美国|United States|CT" ] } ] }
+  - { tag: 🇸🇬 新加坡自动, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇸🇬|\bSG\b|新加坡|Singapore" ] } ] }
+  - { tag: 🇩🇪 德国自动, type: urltest, interrupt_exist_connections: true, url: https://www.gstatic.com/generate_204, interval: 3m, tolerance: 150, outbounds: [], filter: [ { action: include, keywords: [ "🇩🇪|\bDE\b|德国|Germany" ] } ] }
