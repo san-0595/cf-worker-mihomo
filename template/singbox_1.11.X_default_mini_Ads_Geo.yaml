@@ -41,9 +41,8 @@ dns:
     inet6_range: fc00::/18
   servers:
     - { tag: ali-dns-udp, address: 223.5.5.5, detour: 🎯 全球直连 }
-    - { tag: google-dns-udp, address: 8.8.8.8, detour: 🚀 节点选择 }
     - { tag: Direct-dns, address_resolver: ali-dns-udp, address: quic://dns.alidns.com, detour: 🎯 全球直连, strategy: prefer_ipv4 }
-    - { tag: Proxy-dns, address_resolver: google-dns-udp, address: h3://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
+    - { tag: Proxy-dns, address_resolver: ali-dns-udp, address: h3://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
     - { tag: fakeip, address: fakeip }
   rules:
     - { outbound: any, server: Direct-dns }
