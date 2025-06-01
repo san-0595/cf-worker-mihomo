@@ -47,7 +47,6 @@ experimental:
     rdrc_timeout: 1d
 dns:
   servers:
-    - { type: local, tag: local }
     - { type: udp, tag: Ali-DNS-UDP, server: 223.5.5.5, server_port: 53, detour: 🎯 全球直连 }
     - { type: udp, tag: Google-DNS-UDP, server: 8.8.8.8, server_port: 53, detour: 🚀 节点选择 }
     - { type: quic, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 853, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
@@ -62,9 +61,8 @@ dns:
   disable_cache: false
   disable_expire: false
   independent_cache: true
-  final: local
+  final: PROXY-DNS
   strategy: prefer_ipv4
-  client_subnet: 223.5.5.5
 route:
   auto_detect_interface: true
   final: 🚀 节点选择
