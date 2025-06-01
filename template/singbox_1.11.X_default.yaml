@@ -40,9 +40,11 @@ dns:
     inet4_range: 198.18.0.0/15
     inet6_range: fc00::/18
   servers:
+    - { tag: local address: local }
     - { tag: ali-dns-udp, address: 223.5.5.5, detour: 🎯 全球直连 }
-    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: https://dns.alidns.com/dns-query, detour: 🎯 全球直连, strategy: prefer_ipv4 }
-    - { tag: Proxy-dns, address_resolver: ali-dns-udp, address: https://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
+    - { tag: google-dns-udp, address: 8.8.8.8, detour: 🚀 节点选择 }
+    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: quic://dns.alidns.com, detour: 🎯 全球直连, strategy: prefer_ipv4 }
+    - { tag: Proxy-dns, address_resolver: google-dns-udp, address: h3://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
     - { tag: fakeip, address: fakeip }
   rules:
     - { outbound: any, server: Direct-dns }
@@ -50,8 +52,8 @@ dns:
     - { clash_mode: global, server: Proxy-dns }
     - { domain: [ cdn.jsdmirror.com ], server: Direct-dns }
     - { rule_set: [ Geosite-CN ], server: Direct-dns }
-    - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
-  final: Proxy-dns
+    - { inbound: [ tun-in, mixed-in ], server: fakeip, rewrite_ttl: 1 }
+  final: local
   client_subnet: 223.5.5.5
   independent_cache: true
 route:

@@ -47,20 +47,22 @@ experimental:
     rdrc_timeout: 1d
 dns:
   servers:
+    - { type: local, tag: local }
     - { type: udp, tag: Ali-DNS-UDP, server: 223.5.5.5, server_port: 53, detour: 🎯 全球直连 }
-    - { type: https, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 443, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
-    - { type: https, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Ali-DNS-UDP }
+    - { type: udp, tag: Google-DNS-UDP, server: 8.8.8.8, server_port: 53, detour: 🚀 节点选择 }
+    - { type: quic, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 853, server: dns.alidns.com, domain_resolver: Ali-DNS-UDP }
+    - { type: h3, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: Google-DNS-UDP }
     - { type: fakeip, tag: FAKEIP-DNS, inet4_range: 198.18.0.0/15, inet6_range: fc00::/18 }
   rules:
     - { clash_mode: direct, server: DIRECT-DNS }
     - { clash_mode: global, server: PROXY-DNS }
-    - { domain: [ cdn.jsdmirror.com ], server: Direct-dns }
+    - { domain: [ cdn.jsdmirror.com ], server: DIRECT-DNS }
     - { rule_set: [ geosite-cn, geosite-geolocation-cn, geosite-apple, geosite-microsoft ], server: DIRECT-DNS, strategy: prefer_ipv4 }
-    - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
+    - { inbound: [ tun-in, mixed-in ], server: FAKEIP-DNS }
   disable_cache: false
   disable_expire: false
   independent_cache: true
-  final: PROXY-DNS
+  final: local
   strategy: prefer_ipv4
   client_subnet: 223.5.5.5
 route:
