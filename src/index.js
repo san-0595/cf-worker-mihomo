@@ -19,7 +19,6 @@ export default {
         const beianurl = env.BEIANURL || beiandizi
         // 处理 URL 参数
         let urls = url.searchParams.getAll("url");
-        let headers = new Headers(), data = "", status = '200';
 
         if (urls.length === 1 && urls[0].includes(",")) {
             urls = urls[0].split(",").map(u => u.trim()); // 拆分并去除空格
@@ -32,18 +31,6 @@ export default {
                     "Content-Type": "text/html; charset=utf-8"
                 }
             });
-        }
-
-        // URL 校验
-        for (let u of urls) {
-            if (!isValidURL(u)) {
-                return new Response(await getFakePage(IMG, beian, beianurl, configs()), {
-                    status: 200,
-                    headers: {
-                        "Content-Type": "text/html; charset=utf-8"
-                    }
-                });
-            }
         }
         if (!isBrowser) {
             return new Response('不支持的客户端',
@@ -598,8 +585,8 @@ async function getFakePage(image, button_url, button_text, configdata) {
         // 动态设置输入框的placeholder，根据当前模式
         function setPlaceholderForMode(input, mode = 'mihomo') {
             input.placeholder = mode === 'singbox' 
-                ? '请输入singbox订阅地址url，支持格式：base64' 
-                : '请输入clash订阅地址url，支持格式：base64';
+                ? '请输入singbox订阅地址url，支持单节点' 
+                : '请输入clash订阅地址url，支持单节点';
         }
 
         // 初始化所有输入框的placeholder
@@ -756,14 +743,6 @@ async function getFakePage(image, button_url, button_text, configdata) {
                 return;
             }
 
-            const allValid = subscriptionLinks.every(link =>
-                link.startsWith('http://') || link.startsWith('https://'));
-
-            if (subscriptionLinks.length > 0 && !allValid) {
-                alert('请输入有效的订阅URL地址');
-                return;
-            }
-
             const allLinks = [];
             if (templateLink) {
                 allLinks.push(\`template=\${encodeURIComponent(templateLink)}\`);
@@ -789,13 +768,6 @@ async function getFakePage(image, button_url, button_text, configdata) {
 
             if (subscriptionLinks.length === 0 && templateLink) {
                 alert('请输入至少一个订阅链接');
-                return;
-            }
-
-            const allValid = subscriptionLinks.every(link => link.startsWith('https://'));
-
-            if (subscriptionLinks.length > 0 && !allValid) {
-                alert('请输入有效的订阅URL地址');
                 return;
             }
 
@@ -839,15 +811,6 @@ function base64DecodeUtf8(base64) {
     const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
     return new TextDecoder('utf-8').decode(bytes);
 }
-// 校验 URL 是否有效
-function isValidURL(url) {
-    try {
-        const parsedUrl = new URL(url);
-        return ['http:', 'https:'].includes(parsedUrl.protocol);
-    } catch (e) {
-        return false;
-    }
-}
 
 // mihomo 配置
 /**
@@ -860,15 +823,16 @@ function isValidURL(url) {
 async function mihomoconfig({ urls, templateUrl, configUrl }) {
     const templatedata = await getTemplateData({ templateUrl: templateUrl });
     const configData = await getConfigData({ configUrl: configUrl });
-    const selectedHeader = await getRandomProviderHeader({ urls: urls, base: configData.data.p, override: configData.data.override });
-    if (selectedHeader?.data?.proxies) {
-        templatedata.proxies = [...(templatedata.proxies || []), ...selectedHeader.data?.proxies]
+    const selectedHeader = await getRandomProviderHeader({ urls: urls, base: configData.data.p, override: configData.data.override, userAgent: 'ClashMeta' });
+    const { proxies = [], providers = {} } = selectedHeader?.data || {};
+
+    if (proxies.length === 0 && Object.keys(providers).length === 0) {
+        throw new Error('节点为空');
     }
-    if (selectedHeader?.data?.providers) {
-        configData.data['proxy-providers'] = selectedHeader.data.providers;
-    } else {
-        configData.data['proxy-providers'] = {}
+    if (proxies.length > 0) {
+        templatedata.proxies = [...(templatedata.proxies || []), ...proxies];
     }
+    configData.data['proxy-providers'] = providers;
     if (templatedata) {
         applyTemplate({ target: configData.data, template: templatedata });
     }
@@ -906,59 +870,73 @@ async function getConfigData({ configUrl }) {
  * @param {string[]} urls - 订阅地址列表
  * @returns {Promise<{status: number, headers: Object, data: any}>} - 包含状态码、响应头和 subscription-userinfo 字符串
  */
-async function getRandomProviderHeader({ urls, base = [], override = [] }) {
+async function getRandomProviderHeader({ urls, base = [], override = [], userAgent }) {
     const proxies = [];
     const configData = {
         'proxy-providers': {}
     };
+    let res
     if (urls.length === 1) {
-        const res = await fetchResponse({ url: urls[0], userAgent: 'ClashMeta' });
-
-        if (res.data.proxies && Array.isArray(res.data.proxies)) {
+        res = await fetchResponse({ url: urls[0], userAgent: 'ClashMeta' });
+        if (res?.data?.proxies && Array.isArray(res?.data?.proxies)) {
             return {
                 status: res.status,
                 headers: res.headers,
                 data: res.data,
             };
         } else {
-            configData['proxy-providers']['provider'] = {
-                ...base,
-                url: urls[0],
-                path: `./proxies/${generateMD5({ text: urls[0] })}.yaml`,
-                override: {
-                    ...override,
-                    'additional-suffix': '',
-                },
-            };
+            // configData['proxy-providers']['provider'] = {
+            //     ...base,
+            //     url: urls[0],
+            //     path: `./proxies/${generateMD5({ text: urls[0] })}.yaml`,
+            //     override: {
+            //         ...override,
+            //         'additional-suffix': '',
+            //     },
+            // };
+            const proxies = buildApiUrl({ rawUrl: urls[0], BASE_API: subapi, userAgent: userAgent });
+            res = await fetchResponse({ url: proxies, userAgent: userAgent });
             return {
                 status: res.status,
                 headers: res.headers,
-                data: { providers: configData['proxy-providers'] },
+                data: res.data,
             };
         }
     } else {
         let hesList = [];
         for (let i = 0; i < urls.length; i++) {
-            const res = await fetchResponse({ url: urls[i], userAgent: 'ClashMeta' });
+            res = await fetchResponse({ url: urls[i], userAgent: 'ClashMeta' });
             hesList.push({
                 status: res.status,
                 headers: res.headers,
             });
-            if (res.data && Array.isArray(res.data.proxies)) {
+            if (res?.data && Array.isArray(res?.data?.proxies)) {
                 res.data.proxies.forEach((p) => {
                     p.name = `${p.name} [${i + 1}]`;
                 });
                 proxies.push(...res.data.proxies);
             } else {
-                configData['proxy-providers'][`provider${i + 1}`] = {
-                    ...base,
-                    url: urls[i],
-                    path: `./proxies/${generateMD5({ text: urls[i] })}.yaml`,
-                    override: {
-                        ...override,
-                        'additional-suffix': ` [${i + 1}]`,
-                    },
-                };
+                // configData['proxy-providers'][`provider${i + 1}`] = {
+                //     ...base,
+                //     url: urls[i],
+                //     path: `./proxies/${generateMD5({ text: urls[i] })}.yaml`,
+                //     override: {
+                //         ...override,
+                //         'additional-suffix': ` [${i + 1}]`,
+                //     },
+                // };
+                const proxiesdata = buildApiUrl({ rawUrl: urls[0], BASE_API: subapi, userAgent: userAgent });
+                res = await fetchResponse({ url: proxiesdata, userAgent: userAgent });
+                hesList.push({
+                    status: res.status,
+                    headers: res.headers,
+                });
+                if (res?.data?.proxies && Array.isArray(res?.data?.proxies)) {
+                    res.data.proxies.forEach((p) => {
+                        p.name = `${p.name} [${i + 1}]`;
+                    });
+                    proxies.push(...res.data.proxies);
+                }
             }
         }
         const randomIndex = Math.floor(Math.random() * hesList.length);
@@ -1079,8 +1057,8 @@ export async function loadAndMergeOutbounds({ urls, subapi, userAgent }) {
 export async function outboundres({ url, index, subapi, withTagSuffix, userAgent }) {
     let response, out;
     response = await fetchResponse({ url: url, userAgent: userAgent });
-    const resdata = response.data;
-    if (resdata.outbounds && Array.isArray(resdata.outbounds) && resdata.outbounds.length > 0) {
+    const resdata = response?.data;
+    if (resdata?.outbounds && Array.isArray(resdata?.outbounds) && resdata?.outbounds.length > 0) {
         out = outboundArrs({ data: resdata, index: index, withTagSuffix: withTagSuffix })
     } else {
         const outboundsUrl = buildApiUrl({ rawUrl: url, BASE_API: subapi, userAgent: userAgent });
@@ -1177,12 +1155,17 @@ export function loadAndSetOutbounds({ Outbounds, ApiUrlname }) {
 }
 // 处理请求
 export async function fetchResponse({ url, userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' }) {
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'User-Agent': userAgent
-        }
-    });
+    let response
+    try {
+        response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'User-Agent': userAgent
+            }
+        });
+    } catch {
+        return true
+    }
     const headersObj = {};
     // 遍历响应头，将其转为普通的 JavaScript 对象格式
     for (const [key, value] of response.headers.entries()) {
