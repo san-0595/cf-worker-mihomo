@@ -822,18 +822,30 @@ function base64DecodeUtf8(base64) {
  * @returns {Promise<{status:number, headers:Object, data:string}>} - 返回状态、响应头和配置 JSON 字符串
  */
 async function mihomoconfig({ urls, templateUrl, configUrl }) {
-    const templatedata = await getTemplateData({ templateUrl: templateUrl });
-    const configData = await getConfigData({ configUrl: configUrl });
-    const selectedHeader = await getRandomProviderHeader({ urls: urls, base: configData.data.p, override: configData.data.override, userAgent: 'ClashMeta' });
+    const [templatedata, configData] = await Promise.all([
+        getTemplateData({ templateUrl: templateUrl }),
+        getConfigData({ configUrl: configUrl })
+    ]);
+
+    const selectedHeader = await getRandomProviderHeader({
+        urls: urls,
+        base: configData.data.p,
+        override: configData.data.override,
+        userAgent: 'ClashMeta'
+    });
+
     const { proxies = [], providers = {} } = selectedHeader?.data || {};
 
-    if (proxies.length === 0 && Object.keys(providers).length === 0) {
+    if (proxies?.length === 0 && Object.keys(providers)?.length === 0) {
         throw new Error('节点为空');
     }
-    if (proxies.length > 0) {
-        templatedata.proxies = [...(templatedata.proxies || []), ...proxies];
+
+    if (proxies?.length > 0) {
+        templatedata.proxies = [...(templatedata?.proxies || []), ...proxies];
     }
+
     configData.data['proxy-providers'] = providers;
+
     if (templatedata) {
         applyTemplate({ target: configData.data, template: templatedata });
     }
@@ -905,17 +917,20 @@ async function getRandomProviderHeader({ urls, base = [], override = [], userAge
         }
     } else {
         let hesList = [];
-        for (let i = 0; i < urls.length; i++) {
-            res = await fetchResponse({ url: urls[i], userAgent: 'ClashMeta' });
-            hesList.push({
+        
+        // 并发处理所有URL
+        const results = await Promise.all(urls.map(async (url, i) => {
+            let res = await fetchResponse({ url, userAgent: 'ClashMeta' });
+            let entry = {
                 status: res.status,
                 headers: res.headers,
-            });
+            };
+            
             if (res?.data && Array.isArray(res?.data?.proxies)) {
                 res.data.proxies.forEach((p) => {
                     p.name = `${p.name} [${i + 1}]`;
                 });
-                proxies.push(...res.data.proxies);
+                return { entry, proxies: res.data.proxies };
             } else {
                 // configData['proxy-providers'][`provider${i + 1}`] = {
                 //     ...base,
@@ -926,23 +941,32 @@ async function getRandomProviderHeader({ urls, base = [], override = [], userAge
                 //         'additional-suffix': ` [${i + 1}]`,
                 //     },
                 // };
-                const proxiesdata = buildApiUrl({ rawUrl: urls[0], BASE_API: subapi, userAgent: userAgent });
+                const proxiesdata = buildApiUrl({ rawUrl: url, BASE_API: subapi, userAgent: userAgent });
                 res = await fetchResponse({ url: proxiesdata, userAgent: userAgent });
-                hesList.push({
+                entry = {
                     status: res.status,
                     headers: res.headers,
-                });
+                };
+                
                 if (res?.data?.proxies && Array.isArray(res?.data?.proxies)) {
                     res.data.proxies.forEach((p) => {
                         p.name = `${p.name} [${i + 1}]`;
                     });
-                    proxies.push(...res.data.proxies);
+                    return { entry, proxies: res.data.proxies };
                 }
+                return { entry, proxies: [] };
             }
-        }
+        }));
+        
+        // 收集所有结果
+        results.forEach(({ entry, proxies: newProxies }) => {
+            hesList.push(entry);
+            proxies.push(...newProxies);
+        });
+
         const randomIndex = Math.floor(Math.random() * hesList.length);
         const hes = hesList[randomIndex];
-        const data = { providers: configData['proxy-providers'], proxies: proxies }
+        const data = { providers: configData['proxy-providers'], proxies: proxies };
         return {
             status: hes.status,
             headers: hes.headers,
@@ -966,28 +990,38 @@ function applyTemplate({ target, template }) {
 
 // singbox 配置
 async function singboxconfig({ urls, templateUrl, subapi }) {
-    // 模板
-    const templatedata = await fetchResponse({ url: templateUrl });
+    const [templatedata, response] = await Promise.all([
+        fetchResponse({ url: templateUrl }),
+        loadAndMergeOutbounds({ urls: urls, subapi: subapi, userAgent: 'singbox' })
+    ]);
+
     const templatejson = templatedata.data;
-    // 节点
-    const response = await loadAndMergeOutbounds({ urls: urls, subapi: subapi, userAgent: 'singbox' });
     const data = response.data;
     const ApiUrlname = []; // 节点名
+
     if (!data?.length) throw new Error(`节点为空，请使用有效订阅`);
+
     data.forEach((res) => {
         ApiUrlname.push(res.tag);
     });
+
     // 策略组处理
-    templatejson.outbounds = loadAndSetOutbounds({ Outbounds: templatejson.outbounds, ApiUrlname: ApiUrlname });
+    templatejson.outbounds = loadAndSetOutbounds({ 
+        Outbounds: templatejson.outbounds, 
+        ApiUrlname: ApiUrlname 
+    });
+
     // 节点合并
     templatejson.outbounds.push(...data);
-    // 删除锚点
+
+    // 删除锚点 (parallel deletion)
     if (Array.isArray(templatejson.delete)) {
-        for (const key of templatejson.delete) {
+        templatejson.delete.forEach(key => {
             delete templatejson[key];
-        }
+        });
         delete templatejson.delete;
     }
+
     return {
         status: response.status,
         headers: response.headers,
@@ -1027,15 +1061,37 @@ export function buildApiUrl({ rawUrl, BASE_API, userAgent }) {
 export async function loadAndMergeOutbounds({ urls, subapi, userAgent }) {
     const outboundsList = [];
     let response;
+
     if (urls.length === 1) {
-        response = await outboundres({ url: urls[0], subapi: subapi, withTagSuffix: false, userAgent: userAgent })
-        outboundsList.push(...response.out)
+        // 单个 URL 直接请求
+        response = await outboundres({ 
+            url: urls[0], 
+            subapi: subapi, 
+            withTagSuffix: false, 
+            userAgent: userAgent 
+        });
+        outboundsList.push(...response.out);
     } else {
-        for (let i = 0; i < urls.length; i++) {
-            response = await outboundres({ url: urls[i], index: i, subapi: subapi, withTagSuffix: true, userAgent: userAgent })
-            outboundsList.push(...response.out)
-        }
+        // 多个 URL 并发请求
+        const responses = await Promise.all(
+            urls.map((url, index) => 
+                outboundres({ 
+                    url, 
+                    index, 
+                    subapi, 
+                    withTagSuffix: true, 
+                    userAgent 
+                })
+            )
+        );
+
+        // 合并所有响应结果
+        responses.forEach(res => {
+            outboundsList.push(...res.out);
+            response = res;
+        });
     }
+
     return {
         status: response.response.status,
         headers: response.response.headers,
@@ -1059,7 +1115,7 @@ export async function outboundres({ url, index, subapi, withTagSuffix, userAgent
     let response, out;
     response = await fetchResponse({ url: url, userAgent: userAgent });
     const resdata = response?.data;
-    if (resdata?.outbounds && Array.isArray(resdata?.outbounds) && resdata?.outbounds.length > 0) {
+    if (resdata?.outbounds && Array.isArray(resdata?.outbounds) && resdata?.outbounds?.length > 0) {
         out = outboundArrs({ data: resdata, index: index, withTagSuffix: withTagSuffix })
     } else {
         const outboundsUrl = buildApiUrl({ rawUrl: url, BASE_API: subapi, userAgent: userAgent });
@@ -1167,11 +1223,8 @@ export async function fetchResponse({ url, userAgent = 'Mozilla/5.0 (Windows NT 
     } catch {
         return true
     }
-    const headersObj = {};
-    // 遍历响应头，将其转为普通的 JavaScript 对象格式
-    for (const [key, value] of response.headers.entries()) {
-        headersObj[key] = value;
-    }
+    // 直接使用 Object.fromEntries 转换 headers
+    const headersObj = Object.fromEntries(response.headers.entries());
     // 获取响应体的文本内容
     const textData = await response.text();
 
