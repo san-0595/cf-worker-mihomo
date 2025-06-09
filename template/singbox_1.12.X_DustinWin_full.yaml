@@ -48,15 +48,15 @@ experimental:
 dns:
   servers:
     - { type: hosts, tag: host, predefined: { dns.alidns.com: [ 223.5.5.5, 223.6.6.6, 2400:3200:baba::1, 2400:3200::1 ], dns.google: [ 8.8.8.8, 8.8.4.4, 2001:4860:4860::8844, 2001:4860:4860::8888 ] } }
-    - { type: quic, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 853, server: dns.alidns.com, domain_resolver: host }
-    - { type: h3, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: host }
+    - { type: https, tag: DIRECT-DNS, detour: 🎯 全球直连, server_port: 443, server: dns.alidns.com, domain_resolver: host }
+    - { type: https, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: host }
     - { type: fakeip, tag: FAKEIP-DNS, inet4_range: 198.18.0.0/15, inet6_range: fc00::/18 }
   rules:
     - { clash_mode: direct, server: DIRECT-DNS }
     - { clash_mode: global, server: PROXY-DNS }
     - { domain: [ cdn.jsdmirror.com ], server: DIRECT-DNS }
-    - { rule_set: [ cn, private ], server: DIRECT-DNS, strategy: prefer_ipv4 }
-    - { inbound: [ tun-in, mixed-in ], server: FAKEIP-DNS }
+    - { rule_set: [ cn, private ], server: DIRECT-DNS }
+    - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
   disable_cache: false
   disable_expire: false
   independent_cache: true

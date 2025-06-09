@@ -21,8 +21,8 @@ dns:
     inet6_range: fc00::/18
   servers:
     - { tag: ali-dns-udp, address: 223.5.5.5, detour: 🎯 全球直连 }
-    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: quic://dns.alidns.com, detour: 🎯 全球直连, strategy: prefer_ipv4 }
-    - { tag: Proxy-dns, address_resolver: ali-dns-udp, address: h3://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
+    - { tag: Direct-dns, address_resolver: ali-dns-udp, address: https://dns.alidns.com/dns-query, detour: 🎯 全球直连, strategy: prefer_ipv4 }
+    - { tag: Proxy-dns, address_resolver: ali-dns-udp, address: https://dns.google/dns-query, detour: 🚀 节点选择, strategy: prefer_ipv4 }
     - { tag: fakeip, address: fakeip }
   rules:
     - { outbound: any, server: Direct-dns }
@@ -30,7 +30,7 @@ dns:
     - { clash_mode: global, server: Proxy-dns }
     - { domain: [ cdn.jsdmirror.com ], server: Direct-dns }
     - { rule_set: [ cn, private ], server: Direct-dns }
-    - { inbound: [ tun-in, mixed-in ], server: fakeip, rewrite_ttl: 1 }
+    - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
   final: Proxy-dns
   independent_cache: true
 route:
