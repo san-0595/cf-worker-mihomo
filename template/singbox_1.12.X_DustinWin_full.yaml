@@ -52,16 +52,17 @@ dns:
     - { type: h3, tag: PROXY-DNS, detour: 🚀 节点选择, server_port: 443, server: dns.google, domain_resolver: host }
     - { type: fakeip, tag: FAKEIP-DNS, inet4_range: 198.18.0.0/15, inet6_range: fc00::/18 }
   rules:
-    - { clash_mode: direct, server: DIRECT-DNS }
+    - { clash_mode: direct, server: DIRECT-DNS, client_subnet: 223.5.5.5 }
     - { clash_mode: global, server: PROXY-DNS }
-    - { domain: [ cdn.jsdmirror.com ], server: DIRECT-DNS }
-    - { rule_set: [ cn, private ], server: DIRECT-DNS, strategy: prefer_ipv4 }
-    - { inbound: [ tun-in, mixed-in ], server: FAKEIP-DNS }
+    - { domain: [ cdn.jsdmirror.com ], server: DIRECT-DNS, client_subnet: 223.5.5.5 }
+    - { rule_set: [ cn, private ], server: DIRECT-DNS, client_subnet: 223.5.5.5 }
+    - { query_type: [ A, AAAA ], server: FAKEIP-DNS }
   disable_cache: false
   disable_expire: false
   independent_cache: true
   final: PROXY-DNS
   strategy: prefer_ipv4
+  client_subnet: 8.8.8.8
 route:
   auto_detect_interface: true
   final: 🚀 节点选择

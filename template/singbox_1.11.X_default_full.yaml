@@ -46,13 +46,14 @@ dns:
     - { tag: fakeip, address: fakeip }
   rules:
     - { outbound: any, server: Direct-dns }
-    - { clash_mode: direct, server: Direct-dns }
+    - { clash_mode: direct, server: Direct-dns, client_subnet: 223.5.5.5 }
     - { clash_mode: global, server: Proxy-dns }
-    - { domain: [ cdn.jsdmirror.com ], server: Direct-dns }
-    - { rule_set: [ Geosite-CN ], server: Direct-dns }
-    - { inbound: [ tun-in, mixed-in ], server: fakeip, rewrite_ttl: 1 }
+    - { domain: [ cdn.jsdmirror.com ], server: Direct-dns, client_subnet: 223.5.5.5 }
+    - { rule_set: [ Geosite-CN ], server: Direct-dns, client_subnet: 223.5.5.5 }
+    - { query_type: [ A, AAAA ], server: fakeip, rewrite_ttl: 1 }
   final: Proxy-dns
   independent_cache: true
+  client_subnet: 8.8.8.8
 route:
   auto_detect_interface: true
   final: 🚀 节点选择
