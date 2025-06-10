@@ -138,7 +138,7 @@ external-controller-cors: # CORS 配置
   allow-origins: #允许来源
     - http://localhost:*
     - http://127.0.0.1:*
-		- https://yacd.metacubex.one
+    - https://yacd.metacubex.one
     - https://d.metacubex.one
     - https://board.zash.run.place
   allow-private-network: true # 允许私有网络访问
