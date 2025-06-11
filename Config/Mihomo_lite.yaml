@@ -218,6 +218,7 @@ tun:
   auto-detect-interface: true # 自动选择流量出口接口，多出口网卡同时连接的设备建议手动指定出口网卡
   dns-hijack:
     - any:53 # 劫持所有 53 端口的 DNS 请求
+    - tcp://any:53
   device: utun0 # 指定 TUN 设备名称，默认为 utun
   mtu: 1500 # 设置最大传输单元 (MTU)，提高网络吞吐量
   strict-route: true # 启用 auto-route 时执行严格的路由规则
@@ -367,7 +368,7 @@ dns:
     - +.xiami.com
     - +.y.qq.com
   nameserver-policy:
-    github.akams.cn:
+    cdn.jsdmirror.cn:
       - "quic://223.5.5.5"
       - "quic://223.6.6.6"
     "+.jp":
@@ -402,11 +403,11 @@ proxies:
   - name: "🚫拒绝连接"
     type: reject
 proxy-groups:
-  - { name: 🚀全球代理, type: select, proxies: [♻️自动选择, 🟢手动选择, ⚡️均衡负载, 🔯故障转移, 🎯全局直连, 🇭🇰香港自动, 🇹🇼台湾自动, 🇯🇵日本自动, 🇺🇸美国自动, 🇸🇬新加坡自动, 🇬🇧英国自动, 🇩🇪德国自动, 🇫🇷法国自动, 🇨🇦加拿大自动, 🇦🇺澳大利亚自动, 🇰🇷韩国自动, 🇷🇺俄罗斯自动, 🇳🇱荷兰自动, 🇮🇳印度自动, 🇲🇾马来西亚自动, 🇵🇱波兰自动, 🇪🇪爱沙尼亚自动, 🇦🇪阿联酋自动, 🇳🇬尼日利亚自动, 🇧🇬保加利亚自动, 🇸🇨塞舌尔自动, 🇪🇸西班牙自动, 🇻🇳越南自动, 🇸🇽荷属圣马丁自动, 🇲🇴澳门自动, 🇵🇭菲律宾自动, 🇹🇭泰国自动, 🇲🇳蒙古自动, 🇫🇮芬兰自动, 🇸🇪瑞典自动, 🇦🇹奥地利自动, 🇧🇷巴西自动, 🇰🇿哈萨克斯坦自动, 🇮🇱以色列自动, 🇦🇪阿拉伯联合酋长国自动,  🇨🇭瑞士自动, 🌐其它地区], exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
+  - { name: 🚀全球代理, type: select, proxies: [♻️自动选择, 🟢手动选择, ⚡️均衡负载, 🔯故障转移, 🎯全局直连, 🇭🇰香港自动, 🇹🇼台湾自动, 🇯🇵日本自动, 🇺🇸美国自动, 🇸🇬新加坡自动, 🇬🇧英国自动, 🇩🇪德国自动, 🇫🇷法国自动, 🇨🇦加拿大自动, 🇦🇺澳大利亚自动, 🇰🇷韩国自动, 🇷🇺俄罗斯自动, 🇳🇱荷兰自动, 🇮🇳印度自动, 🇲🇾马来西亚自动, 🇵🇱波兰自动, 🇪🇪爱沙尼亚自动, 🇦🇪阿联酋自动, 🇳🇬尼日利亚自动, 🇧🇬保加利亚自动, 🇸🇨塞舌尔自动, 🇪🇸西班牙自动, 🇻🇳越南自动, 🇸🇽荷属圣马丁自动, 🇲🇴澳门自动, 🇵🇭菲律宾自动, 🇹🇭泰国自动, 🇲🇳蒙古自动, 🇫🇮芬兰自动, 🇸🇪瑞典自动, 🇦🇹奥地利自动, 🇧🇷巴西自动, 🇰🇿哈萨克斯坦自动, 🇮🇱以色列自动, 🇦🇪阿拉伯联合酋长国自动,  🇨🇭瑞士自动, 🌐其它地区] }
   - { name: 🟢手动选择, <<: *u, type: select, exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
-  - { name: 🪧广告拦截, type: select, include-all: true, proxies: [🚫拒绝连接, 🚀全球代理, 🎯全局直连], exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
-  - { name: 💧泄漏拦截, type: select, include-all: true, proxies: [🚫拒绝连接, 🚀全球代理, 🎯全局直连], exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
-  - { name: 🎯全球直连, type: select, include-all: true, proxies: [🎯全局直连, 🚀全球代理], exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
+  - { name: 🪧广告拦截, type: select, proxies: [🚫拒绝连接, 🚀全球代理, 🎯全局直连] }
+  - { name: 💧泄漏拦截, type: select, proxies: [🚫拒绝连接, 🚀全球代理, 🎯全局直连] }
+  - { name: 🎯全球直连, type: select, proxies: [🎯全局直连, 🚀全球代理] }
   - { name: ♻️自动选择, <<: *u, tolerance: 1, type: url-test, exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
   - { name: ⚡️均衡负载, <<: *u, strategy: round-robin, type: load-balance, exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
   - { name: 🔯故障转移, <<: *u, type: fallback, exclude-filter: "(?i)🎯全局直连|🚫拒绝连接" }
