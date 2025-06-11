@@ -129,7 +129,7 @@ ipv6: true # 启用 IPv6
 #      format/pem...
 #      -----END CERTIFICATE-----
 
-external-controller: 0.0.0.0:9093 # 外部控制端口
+external-controller: 0.0.0.0:9090 # 外部控制端口
 #external-controller-tls: 0.0.0.0:9443 # TLS 外部控制端口
 secret: "" # 控制接口密钥
 
