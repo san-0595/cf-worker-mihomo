@@ -68,7 +68,7 @@ export default {
 };
 
 // 获取伪装页面
-async function getFakePage(image, button_url, button_text, configdata) {
+export async function getFakePage(image, button_url, button_text, configdata) {
     return `
 <!DOCTYPE html>
 <html>
@@ -821,7 +821,7 @@ function base64DecodeUtf8(base64) {
  * @param {string} configUrl - 基础配置地址（可选）
  * @returns {Promise<{status:number, headers:Object, data:string}>} - 返回状态、响应头和配置 JSON 字符串
  */
-async function mihomoconfig({ urls, templateUrl, configUrl }) {
+export async function mihomoconfig({ urls, templateUrl, configUrl }) {
     const [templatedata, configData] = await Promise.all([
         getTemplateData({ templateUrl: templateUrl }),
         getConfigData({ configUrl: configUrl })
@@ -861,7 +861,7 @@ async function mihomoconfig({ urls, templateUrl, configUrl }) {
  * @param {string} templateUrl - 模板文件地址
  * @returns {Promise<Object|null>} - 返回模板数据对象，或没有模板时返回 null
  */
-async function getTemplateData({ templateUrl }) {
+export async function getTemplateData({ templateUrl }) {
     if (!templateUrl) return null;
     const response = await fetchResponse({ url: templateUrl });
     return response.data;
@@ -871,7 +871,7 @@ async function getTemplateData({ templateUrl }) {
  * @param {string} configUrl - 配置文件地址
  * @returns {Promise<Object>} - 返回配置数据对象
  */
-async function getConfigData({ configUrl }) {
+export async function getConfigData({ configUrl }) {
     if (!configUrl) {
         throw new Error(`缺少模板`);
     }
@@ -883,7 +883,7 @@ async function getConfigData({ configUrl }) {
  * @param {string[]} urls - 订阅地址列表
  * @returns {Promise<{status: number, headers: Object, data: any}>} - 包含状态码、响应头和 subscription-userinfo 字符串
  */
-async function getRandomProviderHeader({ urls, base = [], override = [], userAgent }) {
+export async function getRandomProviderHeader({ urls, base = [], override = [], userAgent }) {
     const proxies = [];
     const configData = {
         'proxy-providers': {}
@@ -989,7 +989,7 @@ function applyTemplate({ target, template }) {
 }
 
 // singbox 配置
-async function singboxconfig({ urls, templateUrl, subapi }) {
+export async function singboxconfig({ urls, templateUrl, subapi }) {
     const [templatedata, response] = await Promise.all([
         fetchResponse({ url: templateUrl }),
         loadAndMergeOutbounds({ urls: urls, subapi: subapi, userAgent: 'singbox' })
