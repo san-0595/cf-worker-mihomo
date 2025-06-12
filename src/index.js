@@ -807,7 +807,7 @@ export async function getFakePage(image, button_url, button_text, configdata) {
 
 </html>    `;
 }
-function base64DecodeUtf8(base64) {
+export function base64DecodeUtf8(base64) {
     const binary = atob(base64);
     const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
     return new TextDecoder('utf-8').decode(bytes);
@@ -980,7 +980,7 @@ export async function getRandomProviderHeader({ urls, base = [], override = [], 
  * @param {Object} target - 目标配置对象（基础配置）
  * @param {Object} template - 模板配置对象
  */
-function applyTemplate({ target, template }) {
+export function applyTemplate({ target, template }) {
     target.proxies = template.proxies || [];
     target['proxy-groups'] = template['proxy-groups'] || [];
     target.rules = template.rules || [];
